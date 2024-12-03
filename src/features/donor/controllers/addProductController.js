@@ -1,59 +1,75 @@
-import jwt from "jsonwebtoken";
+// import { uploadToAzureBlob } from "../../../utils/azureBlob.js";
 import Donor from "../models/donorModel.js";
 
-// Add product to donor's list
+// Add Product (Single or Bulk)
 export const addProduct = async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract the token from Authorization header
-
-  if (!token) {
-    return res
-      .status(401)
-      .json({ success: false, message: "Authorization token is required" });
-  }
+  // const { email } = req.user;
+  const { products, isBulk, email } = req.body;
 
   try {
-    // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const donorEmail = decoded.email;
-
-    // Find the donor by email from the token
-    const donor = await Donor.findOne({ email: donorEmail });
+    const donor = await Donor.findOne({ email });
     if (!donor) {
       return res
         .status(404)
         .json({ success: false, message: "Donor not found" });
     }
 
-    // Extract image paths from Multer's file processing
-    const images = req.files.map((file) => file.path);
+    if (isBulk) {
+      // Bulk product addition
+      if (!Array.isArray(products) || products.length === 0) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid products array" });
+      }
 
-    // Get product details from request body
-    const { name, description, category, condition, quantity } = req.body;
+      // Validate and add products
+      const validatedProducts = products.map((product) => ({
+        name: product.name,
+        description: product.description,
+        category: product.category,
+        condition: product.condition,
+        images: product.images, // Image URLs assumed to be provided in bulk
+        quantity: product.quantity,
+      }));
 
-    // Add the product to the donor's list
-    donor.products.push({
-      name,
-      description,
-      category,
-      condition,
-      quantity,
-      images,
-    });
+      donor.products.push(...validatedProducts);
+    } else {
+      // Single product addition
+      const { name, description, category, condition, quantity } = req.body;
 
-    // Save changes to the database
-    await donor.save();
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: "Image file is required for single product",
+        });
+      }
 
-    res.status(201).json({
-      success: true,
-      message: "Product added successfully",
-      data: donor.products,
-    });
-  } catch (error) {
-    if (error.name === "JsonWebTokenError") {
-      return res.status(401).json({ success: false, message: "Invalid token" });
+      // Upload image to Azure Blob
+      // const imageUrl = await uploadToAzureBlob(req.file);
+
+      // Add the single product
+      const newProduct = {
+        name,
+        description,
+        category,
+        condition,
+        images: [imageUrl], // Image URL from Azure Blob
+        quantity,
+      };
+
+      donor.products.push(newProduct);
     }
 
-    console.error("Error adding product:", error.message);
-    res.status(500).json({ success: false, message: "Error adding product" });
+    await donor.save();
+    return res.status(200).json({
+      success: true,
+      message: "Products added successfully",
+      products: donor.products,
+    });
+  } catch (error) {
+    console.error("Error adding products:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Error adding products" });
   }
 };

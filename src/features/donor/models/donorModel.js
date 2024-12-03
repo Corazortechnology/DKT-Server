@@ -19,6 +19,7 @@ const donorSchema = new mongoose.Schema(
     companyName: { type: String, required: true }, // Donor's company name
     email: { type: String, required: true, unique: true }, // Donor's email
     password: { type: String, required: true },
+    role: { type: String, default: "donor" },
     donationDetails: { type: String }, // Optional donation details
     products: [productSchema], // Array of products added by the donor
   },

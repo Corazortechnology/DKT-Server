@@ -49,7 +49,6 @@ export const requestOtp = async (req, res) => {
     const otp = await generateOTP(email);
 
     // Send OTP via email
-    // await sendOtpEmail(email, otp);
     await sendEmail(email, "otp", { otp });
 
     return res
@@ -89,7 +88,7 @@ export const loginWithOtp = async (req, res) => {
 
     // Generate JWT
     const token = jwt.sign(
-      { email, section, userId: user._id },
+      { email, section, role: user.role, userId: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -123,11 +122,12 @@ export const loginWithGoogle = async (req, res) => {
         message: "Email not registered in this section",
       });
 
-    const jwtToken = jwt.sign(
-      { email: payload.email, section },
+    const token = jwt.sign(
+      { email: payload.email, section, role: user.role, userId: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
+
     return res.status(200).json({ success: true, token: jwtToken });
   } catch (error) {
     return res
