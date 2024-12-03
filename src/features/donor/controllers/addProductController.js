@@ -1,13 +1,23 @@
 // import { uploadToAzureBlob } from "../../../utils/azureBlob.js";
 import Donor from "../models/donorModel.js";
+import jwt from "jsonwebtoken";
 
 // Add Product (Single or Bulk)
 export const addProduct = async (req, res) => {
   // const { email } = req.user;
-  const { products, isBulk, email } = req.body;
+  const { products, isBulk } = req.body;
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res
+      .status(401)
+      .json({ success: false, message: "No token provided" });
+  }
 
   try {
-    const donor = await Donor.findOne({ email });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+    const donor = await Donor.findOne({ _id: userId });
     if (!donor) {
       return res
         .status(404)

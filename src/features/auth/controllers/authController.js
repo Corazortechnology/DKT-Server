@@ -122,7 +122,7 @@ export const loginWithGoogle = async (req, res) => {
         message: "Email not registered in this section",
       });
 
-    const token = jwt.sign(
+    const jwtToken = jwt.sign(
       { email: payload.email, section, role: user.role, userId: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
