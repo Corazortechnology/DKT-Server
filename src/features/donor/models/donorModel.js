@@ -9,7 +9,7 @@ const productSchema = new mongoose.Schema({
     required: true,
     enum: ["New", "Used", "Refurbished"], // Product condition
   },
-  images: [{ type: String, required: true }], // Array of image URLs or paths
+  images: [{ type: String }], // Array of image URLs or paths
   quantity: { type: Number, required: true, min: 1 }, // Quantity of items
   createdAt: { type: Date, default: Date.now }, // Timestamp
 });
