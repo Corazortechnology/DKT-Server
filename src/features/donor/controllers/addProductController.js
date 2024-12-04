@@ -47,12 +47,12 @@ export const addProduct = async (req, res) => {
       // Single product addition
       const { name, description, category, condition, quantity } = req.body;
 
-      if (!req.file) {
-        return res.status(400).json({
-          success: false,
-          message: "Image file is required for single product",
-        });
-      }
+      // if (!req.file) {
+      //   return res.status(400).json({
+      //     success: false,
+      //     message: "Image file is required for single product",
+      //   });
+      // }
 
       // Upload image to Azure Blob
       // const imageUrl = await uploadToAzureBlob(req.file);
@@ -63,7 +63,7 @@ export const addProduct = async (req, res) => {
         description,
         category,
         condition,
-        images: [imageUrl], // Image URL from Azure Blob
+        // images: [imageUrl], // Image URL from Azure Blob
         quantity,
       };
 
