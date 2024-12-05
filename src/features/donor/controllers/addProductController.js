@@ -1,5 +1,7 @@
+
+import mongoose from "mongoose";
 import Donor from "../models/donorModel.js";
-import productUpload from "../models/productModel.js"
+import productUpload from "../models/productModel.js";
 import jwt from "jsonwebtoken";
 
 // Add Product (Single or Bulk)
@@ -12,9 +14,18 @@ export const addProduct = async (req, res) => {
   }
 
   try {
+    // Decode the token and extract the userId
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
     const userId = decoded.userId;
-    const donor = await Donor.findOne({ _id: userId });
+
+    // Validate userId format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "Invalid userId format" });
+    }
+
+    // Look for the donor by userId
+    const donor = await Donor.findById(userId);
 
     if (!donor) {
       return res.status(404).json({ success: false, message: "Donor not found" });
@@ -46,29 +57,18 @@ export const addProduct = async (req, res) => {
       // Single product addition
       const { name, description, category, condition, quantity } = req.body;
 
-      // if (!req.file) {
-      //   return res.status(400).json({
-      //     success: false,
-      //     message: "Image file is required for single product",
-      //   });
-      // }
-
-      // Upload image to Azure Blob (if applicable)
-      // const imageUrl = await uploadToAzureBlob(req.file);
-
       // Add single product
       const newProduct = {
         name,
         description,
         category,
         condition,
-        // images: [imageUrl], // Image URL from Azure Blob (if you are uploading images)
         quantity,
       };
 
       newProductUpload.products.push(newProduct);
     }
-
+    console.log(newProductUpload)
     // Save the product upload entry in the database
     const productsUpload = new productUpload(newProductUpload);
     await productsUpload.save();
