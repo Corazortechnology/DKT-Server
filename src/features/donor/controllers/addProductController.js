@@ -83,3 +83,39 @@ export const addProduct = async (req, res) => {
     return res.status(500).json({ success: false, message: "Error adding products" });
   }
 };
+
+
+
+// get product controler
+
+// Get all product uploads for the authenticated donor
+export const getProductUploads = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ success: false, message: "No token provided" });
+  }
+
+  try {
+    // Verify token and decode the user ID (donor's ID)
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+
+    // Find all ProductUploads created by the donor (using donatedBy reference)
+    const productUploads = await productUpload.find({ donatedBy: userId });
+
+    if (productUploads.length === 0) {
+      return res.status(404).json({ success: false, message: "No product uploads found" });
+    }
+
+    // Return the product uploads
+    return res.status(200).json({
+      success: true,
+      message: "Product uploads retrieved successfully",
+      productUploads,
+    });
+  } catch (error) {
+    console.error("Error fetching product uploads:", error);
+    return res.status(500).json({ success: false, message: "Error fetching product uploads" });
+  }
+};
