@@ -90,7 +90,7 @@ export const loginWithOtp = async (req, res) => {
     const token = jwt.sign(
       { email, section, role: user.role, userId: user._id },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     );
 
     return res
@@ -125,7 +125,7 @@ export const loginWithGoogle = async (req, res) => {
     const jwtToken = jwt.sign(
       { email: payload.email, section, role: user.role, userId: user._id },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     );
 
     return res.status(200).json({ success: true, token: jwtToken });
