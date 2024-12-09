@@ -1,6 +1,9 @@
 import express from "express";
 import { upload } from "../../../middlewares/multer.js";
-import { addProduct, getProductUploads } from "../controllers/addProductController.js";
+import {
+  addProduct,
+  getProductUploads,
+} from "../controllers/addProductController.js";
 // import {
 //   getAllDonors,
 //   createDonor,
@@ -24,7 +27,7 @@ const router = express.Router();
 
 // Add product (Single with image upload, Bulk with URL)
 // router.post("/add-product", authenticateToken, upload.single("image"), addProduct);
-router.post("/add-product", upload.single("image"), addProduct);
+router.post("/add-product", upload.single("images"), addProduct);
 router.get("/get-product", getProductUploads);
 
 export default router;
