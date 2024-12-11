@@ -32,7 +32,7 @@ router.post("/register/request-otp", otpLimiter, requestOtpBeforSignup);
 router.post("/register", registerLimiter, registerUser);
 
 // login
-router.post("/request-otp", otpLimiter, requestOtp);
+router.post("/request-otp", requestOtp);
 router.post("/login-with-otp", loginWithOtp);
 router.post("/login-with-google", loginWithGoogle);
 

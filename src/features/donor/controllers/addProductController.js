@@ -7,7 +7,6 @@ import { uploadToAzureBlob } from "../../../utils/azureBlob.js";
 // Add Product (Single or Bulk)
 export const addProduct = async (req, res) => {
   const { products, isBulk } = req.body;
-
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
@@ -19,7 +18,6 @@ export const addProduct = async (req, res) => {
   try {
     // Decode the token and extract the userId
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     const userId = decoded.userId;
 
     // Validate userId format
@@ -31,20 +29,13 @@ export const addProduct = async (req, res) => {
 
     // Look for the donor by userId
     const donor = await Donor.findById(userId);
-
     if (!donor) {
       return res
         .status(404)
         .json({ success: false, message: "Donor not found" });
     }
 
-    // Prepare the product upload data
-    let newProductUpload = {
-      donatedBy: donor._id, // Reference to the donor
-      donationDetails: req.body.donationDetails || "", // Optional donation details
-      products: [], // Initialize products array
-    };
-
+    // Prepare the product data
     if (isBulk) {
       // Bulk product addition
       if (!Array.isArray(products) || products.length === 0) {
@@ -53,46 +44,69 @@ export const addProduct = async (req, res) => {
           .json({ success: false, message: "Invalid products array" });
       }
 
-      // Validate and add products for bulk upload
-      newProductUpload.products = products.map((product) => ({
-        name: product.name,
-        description: product.description,
-        category: product.category,
-        condition: product.condition,
-        images: product.images, // Images URLs from the bulk data
-        quantity: product.quantity,
-      }));
+      // Iterate through each product and add to the donor's product array
+      for (let product of products) {
+        const { name, description, category, condition, quantity, images } = product;
+
+        // Validate each product field
+        if (!name || !description || !category || !condition || !quantity) {
+          return res.status(400).json({ success: false, message: "Missing product fields" });
+        }
+        // Create the new product object
+        const newProduct = {
+          name,
+          description,
+          category,
+          condition,
+          quantity,
+          images: images,
+        };
+
+        // Push the new product to the donor's product array
+        donor.products.push(newProduct);
+        await donor.save(); // Save the donor after adding the product
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Products added successfully (bulk)",
+        products: donor.products,
+      });
     } else {
       // Single product addition
       const { name, description, category, condition, quantity } = req.body;
+      if (!name || !description || !category || !condition || !quantity) {
+        return res.status(400).json({ success: false, message: "Missing product fields" });
+      }
+
+      // Check if a file is uploaded (image for the single product)
       if (!req.file) {
-        return res.status(400).json({ message: "No image file provided" });
+        return res.status(400).json({ success: false, message: "No image file provided" });
       }
 
       // Handle image upload for the single product
       const image_url = await uploadToAzureBlob(req.file);
 
-      // Add single product
+      // Create the new product object
       const newProduct = {
         name,
         description,
         category,
         condition,
         quantity,
-        images: image_url,
+        images: [image_url], // Save the uploaded image URL in the images array
       };
 
-      newProductUpload.products.push(newProduct);
-    }
-    // Save the product upload entry in the database
-    const productsUpload = new productUpload(newProductUpload);
-    await productsUpload.save();
+      // Add the single product to the donor's products array
+      donor.products.push(newProduct);
+      await donor.save(); // Save the donor with the new product
 
-    return res.status(200).json({
-      success: true,
-      message: "Products added successfully",
-      products: productsUpload.products,
-    });
+      return res.status(200).json({
+        success: true,
+        message: "Product added successfully (single)",
+        product: newProduct,
+      });
+    }
   } catch (error) {
     console.error("Error adding products:", error);
     return res
@@ -100,7 +114,6 @@ export const addProduct = async (req, res) => {
       .json({ success: false, message: "Error adding products" });
   }
 };
-
 // get product controler
 
 // Get all product uploads for the authenticated donor
@@ -114,12 +127,28 @@ export const getProductUploads = async (req, res) => {
   }
 
   try {
-    // Verify token and decode the user ID (donor's ID)
+    // Verify the token and decode the user ID (donor's ID)
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.userId;
 
-    // Find all ProductUploads created by the donor (using donatedBy reference)
-    const productUploads = await productUpload.find({ donatedBy: userId });
+    // Validate userId format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid userId format" });
+    }
+ 
+    // Find the donor by ID
+    const donor = await Donor.findById(userId);
+
+    if (!donor) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Donor not found" });
+    }
+
+    // Retrieve the products uploaded by the donor from the products array
+    const productUploads = donor.products;
 
     if (productUploads.length === 0) {
       return res
@@ -131,7 +160,7 @@ export const getProductUploads = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Product uploads retrieved successfully",
-      productUploads,
+      products:productUploads,
     });
   } catch (error) {
     console.error("Error fetching product uploads:", error);
