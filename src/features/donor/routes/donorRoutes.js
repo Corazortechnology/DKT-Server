@@ -4,6 +4,7 @@ import {
   addProduct,
   getProductUploads,
 } from "../controllers/addProductController.js";
+import { createRequest } from "../controllers/createRequestController.js";
 // import {
 //   getAllDonors,
 //   createDonor,
@@ -29,5 +30,7 @@ const router = express.Router();
 // router.post("/add-product", authenticateToken, upload.single("image"), addProduct);
 router.post("/add-product", upload.single("images"), addProduct);
 router.get("/get-product", getProductUploads);
+
+router.post("/create-requests", createRequest); // Create request
 
 export default router;

@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import Donor from "../models/donorModel.js";
-import productUpload from "../models/productModel.js";
 import jwt from "jsonwebtoken";
 import { uploadToAzureBlob } from "../../../utils/azureBlob.js";
 
@@ -46,11 +45,14 @@ export const addProduct = async (req, res) => {
 
       // Iterate through each product and add to the donor's product array
       for (let product of products) {
-        const { name, description, category, condition, quantity, images } = product;
+        const { name, description, category, condition, quantity, images } =
+          product;
 
         // Validate each product field
         if (!name || !description || !category || !condition || !quantity) {
-          return res.status(400).json({ success: false, message: "Missing product fields" });
+          return res
+            .status(400)
+            .json({ success: false, message: "Missing product fields" });
         }
         // Create the new product object
         const newProduct = {
@@ -76,12 +78,16 @@ export const addProduct = async (req, res) => {
       // Single product addition
       const { name, description, category, condition, quantity } = req.body;
       if (!name || !description || !category || !condition || !quantity) {
-        return res.status(400).json({ success: false, message: "Missing product fields" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Missing product fields" });
       }
 
       // Check if a file is uploaded (image for the single product)
       if (!req.file) {
-        return res.status(400).json({ success: false, message: "No image file provided" });
+        return res
+          .status(400)
+          .json({ success: false, message: "No image file provided" });
       }
 
       // Handle image upload for the single product
@@ -137,7 +143,7 @@ export const getProductUploads = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid userId format" });
     }
- 
+
     // Find the donor by ID
     const donor = await Donor.findById(userId);
 
@@ -160,7 +166,7 @@ export const getProductUploads = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Product uploads retrieved successfully",
-      products:productUploads,
+      products: productUploads,
     });
   } catch (error) {
     console.error("Error fetching product uploads:", error);

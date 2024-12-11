@@ -1,27 +1,32 @@
 import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema({
-  name: { type: String, required: true }, // Product name
-  description: { type: String, required: true }, // Product description
-  category: { type: String, required: true }, // Product category (e.g., electronics, furniture)
+  name: { type: String, required: true },
+  description: { type: String, required: true },
+  category: { type: String, required: true },
   condition: {
     type: String,
     required: true,
-    enum: ["New", "Used", "Refurbished"], // Product condition
+    enum: ["Recycle", "Reuse", "Refurbished"],
   },
-  images: [{ type: String }], // Array of image URLs or paths
-  quantity: { type: Number, required: true, min: 1 }, // Quantity of items
-  createdAt: { type: Date, default: Date.now }, // Timestamp
+  images: [{ type: String }],
+  quantity: { type: Number, required: true, min: 1 },
+  status: {
+    type: String,
+    default: "available",
+    enum: ["available", "requested", "assigned", "delivered"],
+  },
+  createdAt: { type: Date, default: Date.now },
 });
 
 const donorSchema = new mongoose.Schema(
   {
-    companyName: { type: String, required: true }, // Donor's company name
-    email: { type: String, required: true, unique: true }, // Donor's email
+    companyName: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, default: "donor" },
-    donationDetails: { type: String }, // Optional donation details
-    products: [productSchema], // Array of products added by the donor
+    donationDetails: { type: String },
+    products: [productSchema],
   },
   { timestamps: true }
 );
