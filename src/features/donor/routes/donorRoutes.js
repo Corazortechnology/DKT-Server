@@ -4,7 +4,7 @@ import {
   addProduct,
   getProductUploads,
 } from "../controllers/addProductController.js";
-import { createRequest } from "../controllers/createRequestController.js";
+import { createRequest, getRequests } from "../controllers/createRequestController.js";
 // import {
 //   getAllDonors,
 //   createDonor,
@@ -32,5 +32,5 @@ router.post("/add-product", upload.single("images"), addProduct);
 router.get("/get-myUploads", getProductUploads);
 
 router.post("/create-requests", createRequest); // Create request
-
+router.get("/getrequests", getRequests); // Create request
 export default router;
