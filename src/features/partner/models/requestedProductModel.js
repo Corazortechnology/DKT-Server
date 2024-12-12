@@ -7,7 +7,7 @@ const requestedProductSchema = new mongoose.Schema(
       ref: "Request",
       required: true,
     },
-    productId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    productId: { type: mongoose.Schema.Types.ObjectId,ref:"Product", required: true },
     donorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Donor",
@@ -16,9 +16,8 @@ const requestedProductSchema = new mongoose.Schema(
     partnerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Partner",
-      required: true,
     },
-    quantity: { type: Number, required: true },
+    quantity: { type: Number,default:1 },
     status: {
       type: String,
       default: "requested",

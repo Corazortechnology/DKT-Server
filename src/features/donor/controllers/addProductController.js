@@ -2,8 +2,11 @@ import mongoose from "mongoose";
 import Donor from "../models/donorModel.js";
 import jwt from "jsonwebtoken";
 import { uploadToAzureBlob } from "../../../utils/azureBlob.js";
+import productModel from "../models/productModel.js";
+import productUploadsModel from "../models/productUploadsModel.js";
 
 // Add Product (Single or Bulk)
+
 export const addProduct = async (req, res) => {
   const { products, isBulk } = req.body;
   const token = req.headers.authorization?.split(" ")[1];
@@ -34,7 +37,8 @@ export const addProduct = async (req, res) => {
         .json({ success: false, message: "Donor not found" });
     }
 
-    // Prepare the product data
+    let createdProductIds = [];
+
     if (isBulk) {
       // Bulk product addition
       if (!Array.isArray(products) || products.length === 0) {
@@ -43,36 +47,46 @@ export const addProduct = async (req, res) => {
           .json({ success: false, message: "Invalid products array" });
       }
 
-      // Iterate through each product and add to the donor's product array
       for (let product of products) {
         const { name, description, category, condition, quantity, images } =
           product;
 
-        // Validate each product field
+        // Validate product fields
         if (!name || !description || !category || !condition || !quantity) {
           return res
             .status(400)
             .json({ success: false, message: "Missing product fields" });
         }
-        // Create the new product object
-        const newProduct = {
+
+        // Create the product
+        const newProduct = await productModel.create({
           name,
           description,
           category,
           condition,
           quantity,
-          images: images,
-        };
+          images: images || [],
+        });
 
-        // Push the new product to the donor's product array
-        donor.products.push(newProduct);
-        await donor.save(); // Save the donor after adding the product
+        createdProductIds.push(newProduct._id);
+
+        // Add the product to the donor's products array
+        donor.products.push(newProduct._id);
       }
+
+      // Save the donor after adding products
+      await donor.save();
+
+      // Create an entry in the productUpload collection
+      await productUploadsModel.create({
+        donerId: donor._id,
+        products: createdProductIds,
+      });
 
       return res.status(200).json({
         success: true,
         message: "Products added successfully (bulk)",
-        products: donor.products,
+        products: createdProductIds,
       });
     } else {
       // Single product addition
@@ -83,7 +97,6 @@ export const addProduct = async (req, res) => {
           .json({ success: false, message: "Missing product fields" });
       }
 
-      // Check if a file is uploaded (image for the single product)
       if (!req.file) {
         return res
           .status(400)
@@ -93,19 +106,25 @@ export const addProduct = async (req, res) => {
       // Handle image upload for the single product
       const image_url = await uploadToAzureBlob(req.file);
 
-      // Create the new product object
-      const newProduct = {
+      // Create the product
+      const newProduct = await productModel.create({
         name,
         description,
         category,
         condition,
         quantity,
-        images: [image_url], // Save the uploaded image URL in the images array
-      };
+        images: [image_url],
+      });
 
-      // Add the single product to the donor's products array
-      donor.products.push(newProduct);
-      await donor.save(); // Save the donor with the new product
+      // Add the product to the donor's products array
+      donor.products.push(newProduct._id);
+      await donor.save();
+
+      // Create an entry in the productUpload collection
+      await productUploadsModel.create({
+        donerId: donor._id,
+        products: [newProduct._id],
+      });
 
       return res.status(200).json({
         success: true,
@@ -120,6 +139,7 @@ export const addProduct = async (req, res) => {
       .json({ success: false, message: "Error adding products" });
   }
 };
+
 // get product controler
 
 // Get all product uploads for the authenticated donor
@@ -144,29 +164,22 @@ export const getProductUploads = async (req, res) => {
         .json({ success: false, message: "Invalid userId format" });
     }
 
-    // Find the donor by ID
-    const donor = await Donor.findById(userId);
+    // Find the product uploads for the donor and populate the products
+    const productsUploads = await productUploadsModel
+      .find({ donerId: userId })
+      .populate("products"); // Populate the products field with product details
 
-    if (!donor) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Donor not found" });
-    }
-
-    // Retrieve the products uploaded by the donor from the products array
-    const productUploads = donor.products;
-
-    if (productUploads.length === 0) {
+    if (!productsUploads || productsUploads.length === 0) {
       return res
         .status(404)
         .json({ success: false, message: "No product uploads found" });
     }
 
-    // Return the product uploads
+    // Return the product uploads with populated products
     return res.status(200).json({
       success: true,
       message: "Product uploads retrieved successfully",
-      products: productUploads,
+      productsUploads,
     });
   } catch (error) {
     console.error("Error fetching product uploads:", error);
@@ -175,3 +188,4 @@ export const getProductUploads = async (req, res) => {
       .json({ success: false, message: "Error fetching product uploads" });
   }
 };
+

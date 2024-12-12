@@ -29,7 +29,7 @@ const router = express.Router();
 // Add product (Single with image upload, Bulk with URL)
 // router.post("/add-product", authenticateToken, upload.single("image"), addProduct);
 router.post("/add-product", upload.single("images"), addProduct);
-router.get("/get-product", getProductUploads);
+router.get("/get-myUploads", getProductUploads);
 
 router.post("/create-requests", createRequest); // Create request
 
