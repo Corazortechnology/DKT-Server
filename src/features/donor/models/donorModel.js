@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 const donorSchema = new mongoose.Schema(
   {
     companyName: { type: String, required: true },
