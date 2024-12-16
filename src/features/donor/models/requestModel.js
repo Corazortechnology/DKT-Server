@@ -11,10 +11,13 @@ const requestSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Partner",
     },
+    address: {type:String,required: true},
+    shippingDate: {type:String,required: true},
+    description: {type:String},
     products: [
       {
-        type:mongoose.Schema.Types.ObjectId,
-      ref:"Product",
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
         required: true,
       },
     ],

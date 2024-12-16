@@ -11,6 +11,11 @@ const donorSchema = new mongoose.Schema(
       type:mongoose.Schema.Types.ObjectId,
       ref:"Product"
     }],
+    gstIn:[{
+      gst_number:{type: String,required: true},
+      company_name:{type: String,required: true},
+      company_address:{type: String,required: true},
+    }]
   },
   { timestamps: true }
 );

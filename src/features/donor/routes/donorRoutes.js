@@ -6,10 +6,12 @@ import {
 } from "../controllers/addProductController.js";
 import {
   createRequest,
+  getDonerRequests,
   getRequests,
 } from "../controllers/createRequestController.js";
 import { getDonorDetails } from "../controllers/donorController.js";
 import { authenticateToken } from "../middelwere/authenticateToken.js";
+import { addGstDetails } from "../controllers/addGstInfo.js";
 // import {
 //   getAllDonors,
 //   createDonor,
@@ -40,5 +42,10 @@ router.post("/add-product", upload.single("images"), addProduct);
 router.get("/get-myUploads", getProductUploads);
 
 router.post("/create-requests", createRequest); // Create request
-router.get("/getrequests", getRequests); // Create request
+router.get("/requests", getRequests); // Create request
+router.get("/requests/donor",authenticateToken,getDonerRequests); // Create request
+
+//adding gst rout 
+router.post("/gstInfo/add",authenticateToken,addGstDetails); // Create request
+
 export default router;
