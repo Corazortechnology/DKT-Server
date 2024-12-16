@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getUserName,
   loginWithGoogle,
   loginWithOtp,
   requestOtp,
@@ -50,5 +51,7 @@ router.get(
   beneficiaryDashboard
 );
 router.get("/admin-dashboard", authorizeRoles(["admin"]), adminDashboard);
+
+router.get("/getUserName", getUserName);
 
 export default router;

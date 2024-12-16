@@ -72,7 +72,7 @@ export const loginWithOtp = async (req, res) => {
     }
 
     const user = await SectionModel.findOne({ email });
-    console.log(user)
+    console.log(user);
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -114,7 +114,6 @@ export const loginWithGoogle = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid section" });
     const payload = await verifyGoogleToken(token);
-    console.log(payload)
     const user = await SectionModel.findOne({ email: payload.email });
     if (!user)
       return res.status(404).json({
@@ -133,5 +132,53 @@ export const loginWithGoogle = async (req, res) => {
     return res
       .status(400)
       .json({ success: false, message: "Invalid Google token" });
+  }
+};
+
+export const getUserName = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  try {
+    // Verify and decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { section, email } = decoded;
+
+    // Validate section
+    const SectionModel = sections[section];
+    if (!SectionModel) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid section" });
+    }
+    console.log(token);
+
+    // Find user by email
+    const user = await SectionModel.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found in this section",
+      });
+    }
+
+    // Determine the username field based on the section
+    let name;
+    if (section === "donor") {
+      name = user.companyName;
+    } else if (section === "beneficiary") {
+      name = user.name;
+    } else if (section === "admin") {
+      name = user.username;
+    } else if (section === "partner") {
+      name = user.partnerName;
+    }
+
+    // Return the name
+    return res.status(200).json({ success: true, name, email });
+  } catch (error) {
+    console.error("Error during fetching user name:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Error fetching user name" });
   }
 };
