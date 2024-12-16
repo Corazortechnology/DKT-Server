@@ -8,6 +8,8 @@ import {
   createRequest,
   getRequests,
 } from "../controllers/createRequestController.js";
+import { getDonorDetails } from "../controllers/donorController.js";
+import { authenticateToken } from "../middelwere/authenticateToken.js";
 // import {
 //   getAllDonors,
 //   createDonor,
@@ -29,8 +31,11 @@ const router = express.Router();
 // // DELETE: Remove a donor
 // router.delete("/:id", deleteDonor);
 
+
 // Add product (Single with image upload, Bulk with URL)
 // router.post("/add-product", authenticateToken, upload.single("image"), addProduct);
+
+router.get("/",authenticateToken,getDonorDetails)
 router.post("/add-product", upload.single("images"), addProduct);
 router.get("/get-myUploads", getProductUploads);
 

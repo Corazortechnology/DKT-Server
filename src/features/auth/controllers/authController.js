@@ -17,7 +17,7 @@ const sections = {
 
 // Request OTP after password verification
 export const requestOtp = async (req, res) => {
-  const { email, section, password } = req.body;
+  const { email, section } = req.body;
 
   try {
     // Validate section
@@ -37,14 +37,13 @@ export const requestOtp = async (req, res) => {
       });
     }
 
-    // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid password" });
-    }
-
+    // // Verify password
+    // const isPasswordValid = await bcrypt.compare(password, user.password);
+    // if (!isPasswordValid) {
+    //   return res
+    //     .status(400)
+    //     .json({ success: false, message: "Invalid password" });
+    // }
     // Generate OTP
     const otp = await generateOTP(email);
 
@@ -73,6 +72,7 @@ export const loginWithOtp = async (req, res) => {
     }
 
     const user = await SectionModel.findOne({ email });
+    console.log(user)
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -113,8 +113,8 @@ export const loginWithGoogle = async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: "Invalid section" });
-
     const payload = await verifyGoogleToken(token);
+    console.log(payload)
     const user = await SectionModel.findOne({ email: payload.email });
     if (!user)
       return res.status(404).json({
