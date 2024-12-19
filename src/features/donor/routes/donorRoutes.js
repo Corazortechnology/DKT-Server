@@ -6,6 +6,7 @@ import {
 } from "../controllers/addProductController.js";
 import {
   createRequest,
+  getAcceptedRequests,
   getDonerRequests,
   getRequests,
 } from "../controllers/createRequestController.js";
@@ -33,19 +34,19 @@ const router = express.Router();
 // // DELETE: Remove a donor
 // router.delete("/:id", deleteDonor);
 
-
 // Add product (Single with image upload, Bulk with URL)
 // router.post("/add-product", authenticateToken, upload.single("image"), addProduct);
 
-router.get("/",authenticateToken,getDonorDetails)
+router.get("/", authenticateToken, getDonorDetails);
 router.post("/add-product", upload.single("images"), addProduct);
 router.get("/get-myUploads", getProductUploads);
 
 router.post("/create-requests", createRequest); // Create request
 router.get("/requests", getRequests); // Create request
-router.get("/requests/donor",authenticateToken,getDonerRequests); // Create request
+router.get("/acceptedRequests", getAcceptedRequests); // Create request
+router.get("/requests/donor", authenticateToken, getDonerRequests); // Create request
 
-//adding gst rout 
-router.post("/gstInfo/add",authenticateToken,addGstDetails); // Create request
+//adding gst rout
+router.post("/gstInfo/add", authenticateToken, addGstDetails); // Create request
 
 export default router;
