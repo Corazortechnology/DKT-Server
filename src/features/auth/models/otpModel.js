@@ -5,6 +5,8 @@ const otpSchema = new mongoose.Schema({
   otp: { type: String, required: true },
 },{
   timestamps:true
+},{
+  timestamps:true
 });
 
 export default mongoose.model("OTP", otpSchema);

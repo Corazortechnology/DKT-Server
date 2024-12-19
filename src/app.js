@@ -33,7 +33,8 @@ authModule(app); // Routes for login and authentication (e.g., /api/auth)
 app.use("/api/v1/beneficiary", protect, beneficiaryModule);
 // app.use("/api/v1/donor", protect, donorModule);
 app.use("/api/v1/admin", protect, isAdmin, adminModule);
-app.use("/api/v1/partner", protect, partnerModule);
+// app.use("/api/v1/partner", protect, partnerModule);
+partnerModule(app);
 donorModule(app);
 
 // Error Handler

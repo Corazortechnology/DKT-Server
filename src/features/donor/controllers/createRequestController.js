@@ -128,7 +128,7 @@ export const getDonerRequests = async (req, res) => {
       .find({ donor:req.userId })
       .populate("donor")
       .populate("partner")
-      .populate("products");
+      .populate("products").sort({updatedAt:-1});
 
     res.status(200).json({
       success: true,
@@ -146,6 +146,54 @@ export const getDonerRequests = async (req, res) => {
 }; 
 
 
+
+export const getDonerRequestsById = async (req, res) => {
+  try {
+    const {donerId} = req.body;
+    const requestedProducts = await requestModel
+      .find({ donor:donerId })
+      .populate("donor")
+      .populate("partner")
+      .populate("products").sort({updatedAt:-1});
+
+    res.status(200).json({
+      success: true,
+      data: requestedProducts,
+      message:"requests found successfully!!"
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+}; 
+export const getDonerRequestsBy_Id = async (req, res) => {
+  try {
+    const {requestId} = req.body;
+    const requestedProducts = await requestModel
+      .find({ _id:requestId })
+      .populate("donor")
+      .populate("partner")
+      .populate("products").sort({updatedAt:-1});
+
+    res.status(200).json({
+      success: true,
+      data: requestedProducts,
+      message:"requests found successfully!!"
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+}; 
+
 export const getRequests = async (req, res) => {
   try {
     // Fetch all requests with the status "requested"
@@ -153,7 +201,7 @@ export const getRequests = async (req, res) => {
       .find({ status: "requested" })
       .populate("donor")
       .populate("partner")
-      .populate("products");
+      .populate("products").sort({updatedAt:-1});
 
     res.status(200).json({
       success: true,

@@ -2,14 +2,18 @@ import express from "express";
 import { upload } from "../../../middlewares/multer.js";
 import {
   addProduct,
+  getDonorsProductUploadsById,
   getProductUploads,
+  getProductUploadsById,
 } from "../controllers/addProductController.js";
 import {
   createRequest,
   getDonerRequests,
+  getDonerRequestsById,
+  getDonerRequestsBy_Id,
   getRequests,
 } from "../controllers/createRequestController.js";
-import { getDonorDetails } from "../controllers/donorController.js";
+import { getAllDonor, getDonorById, getDonorDetails } from "../controllers/donorController.js";
 import { authenticateToken } from "../middelwere/authenticateToken.js";
 import { addGstDetails } from "../controllers/addGstInfo.js";
 // import {
@@ -38,12 +42,22 @@ const router = express.Router();
 // router.post("/add-product", authenticateToken, upload.single("image"), addProduct);
 
 router.get("/",authenticateToken,getDonorDetails)
+router.post("/getDonorById",authenticateToken,getDonorById)
+router.get("/allDonor",authenticateToken,getAllDonor)
 router.post("/add-product", upload.single("images"), addProduct);
 router.get("/get-myUploads", getProductUploads);
+router.post("/get-myUploadsById", getProductUploadsById);
+router.post("/getDonorUploadsById", getDonorsProductUploadsById);
 
 router.post("/create-requests", createRequest); // Create request
-router.get("/requests", getRequests); // Create request
-router.get("/requests/donor",authenticateToken,getDonerRequests); // Create request
+router.get("/requests", getRequests); // get requests
+
+//this both are same one is taking form token and in is body
+router.get("/requests/donor",authenticateToken,getDonerRequests); // get doner request by token 
+router.post("/requests/donor",authenticateToken,getDonerRequestsById); // get doner request by Id
+
+//for admin basis on request id 
+router.post("/requests",authenticateToken,getDonerRequestsBy_Id); // get doner request by Id
 
 //adding gst rout 
 router.post("/gstInfo/add",authenticateToken,addGstDetails); // Create request

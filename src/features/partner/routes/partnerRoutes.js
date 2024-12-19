@@ -1,5 +1,6 @@
 import express from "express";
 import { updateRequestedProductStatus } from "../controllers/updateRequestedProductStatus.js";
+import { acceptRequest } from "../controllers/acceptRequestController.js";
 // import {
 //   getAllPartners,
 //   createPartner,
@@ -22,5 +23,6 @@ const router = express.Router();
 // router.delete("/:id", deletePartner);
 
 router.put("/requested-products/status", updateRequestedProductStatus);
+router.post("/accept-request", acceptRequest);
 
 export default router;

@@ -189,3 +189,78 @@ export const getProductUploads = async (req, res) => {
   }
 };
 
+
+// get oroduct uploads By Id 
+export const getProductUploadsById = async (req, res) => {
+  
+  try {
+     const {userId} = req.body
+
+    // Validate userId format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid userId format" });
+    }
+
+    // Find the product uploads for the donor and populate the products
+    const productsUploads = await productUploadsModel
+      .find({ donerId: userId })
+      .populate("products").populate("donerId").sort({createdAt:-1}); // Populate the products field with product details
+
+    if (!productsUploads || productsUploads.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No product uploads found" });
+    }
+
+    // Return the product uploads with populated products
+    return res.status(200).json({
+      success: true,
+      message: "Product uploads retrieved successfully",
+      productsUploads,
+    });
+  } catch (error) {
+    console.error("Error fetching product uploads:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Error fetching product uploads" });
+  }
+};
+
+export const getDonorsProductUploadsById = async (req, res) => {
+  
+  try {
+     const {uploadId} = req.body
+
+    // Validate userId format
+    if (!mongoose.Types.ObjectId.isValid(uploadId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid userId format" });
+    }
+
+    // Find the product uploads for the donor and populate the products
+    const productsUploads = await productUploadsModel
+      .find({ _id: uploadId })
+      .populate("products").populate("donerId").sort({createdAt:-1}); // Populate the products field with product details
+
+    if (!productsUploads || productsUploads.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No product uploads found" });
+    }
+
+    // Return the product uploads with populated products
+    return res.status(200).json({
+      success: true,
+      message: "Product uploads retrieved successfully",
+      productsUploads,
+    });
+  } catch (error) {
+    console.error("Error fetching product uploads:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Error fetching product uploads" });
+  }
+};
