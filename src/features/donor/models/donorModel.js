@@ -1,27 +1,21 @@
 import mongoose from "mongoose";
 
-const productSchema = new mongoose.Schema({
-  name: { type: String, required: true }, // Product name
-  description: { type: String, required: true }, // Product description
-  category: { type: String, required: true }, // Product category (e.g., electronics, furniture)
-  condition: {
-    type: String,
-    required: true,
-    enum: ["New", "Used", "Refurbished"], // Product condition
-  },
-  images: [{ type: String }], // Array of image URLs or paths
-  quantity: { type: Number, required: true, min: 1 }, // Quantity of items
-  createdAt: { type: Date, default: Date.now }, // Timestamp
-});
-
 const donorSchema = new mongoose.Schema(
   {
-    companyName: { type: String, required: true }, // Donor's company name
-    email: { type: String, required: true, unique: true }, // Donor's email
+    companyName: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, default: "donor" },
-    donationDetails: { type: String }, // Optional donation details
-    products: [productSchema], // Array of products added by the donor
+    donationDetails: { type: String },
+    products: [{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"Product"
+    }],
+    gstIn:[{
+      gst_number:{type: String,required: true},
+      company_name:{type: String,required: true},
+      company_address:{type: String,required: true},
+    }]
   },
   { timestamps: true }
 );

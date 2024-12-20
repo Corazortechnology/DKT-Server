@@ -17,7 +17,7 @@ const sections = {
 
 // Request OTP after password verification
 export const requestOtp = async (req, res) => {
-  const { email, section, password } = req.body;
+  const { email, section } = req.body;
 
   try {
     // Validate section
@@ -37,14 +37,13 @@ export const requestOtp = async (req, res) => {
       });
     }
 
-    // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid password" });
-    }
-
+    // // Verify password
+    // const isPasswordValid = await bcrypt.compare(password, user.password);
+    // if (!isPasswordValid) {
+    //   return res
+    //     .status(400)
+    //     .json({ success: false, message: "Invalid password" });
+    // }
     // Generate OTP
     const otp = await generateOTP(email);
 
@@ -73,6 +72,7 @@ export const loginWithOtp = async (req, res) => {
     }
 
     const user = await SectionModel.findOne({ email });
+   
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -113,7 +113,6 @@ export const loginWithGoogle = async (req, res) => {
       return res
         .status(400)
         .json({ success: false, message: "Invalid section" });
-
     const payload = await verifyGoogleToken(token);
     const user = await SectionModel.findOne({ email: payload.email });
     if (!user)
@@ -133,5 +132,53 @@ export const loginWithGoogle = async (req, res) => {
     return res
       .status(400)
       .json({ success: false, message: "Invalid Google token" });
+  }
+};
+
+export const getUserName = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  try {
+    // Verify and decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { section, email } = decoded;
+
+    // Validate section
+    const SectionModel = sections[section];
+    if (!SectionModel) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid section" });
+    }
+  
+
+    // Find user by email
+    const user = await SectionModel.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found in this section",
+      });
+    }
+
+    // Determine the username field based on the section
+    let name;
+    if (section === "donor") {
+      name = user.companyName;
+    } else if (section === "beneficiary") {
+      name = user.name;
+    } else if (section === "admin") {
+      name = user.username;
+    } else if (section === "partner") {
+      name = user.partnerName;
+    }
+
+    // Return the name
+    return res.status(200).json({ success: true, name, email });
+  } catch (error) {
+    console.error("Error during fetching user name:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Error fetching user name" });
   }
 };
