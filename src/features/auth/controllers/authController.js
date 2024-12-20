@@ -72,7 +72,7 @@ export const loginWithOtp = async (req, res) => {
     }
 
     const user = await SectionModel.findOne({ email });
-    console.log(user);
+   
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -150,7 +150,7 @@ export const getUserName = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid section" });
     }
-    console.log(token);
+  
 
     // Find user by email
     const user = await SectionModel.findOne({ email });

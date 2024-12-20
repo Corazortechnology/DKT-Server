@@ -54,7 +54,7 @@ import productModel from "../models/productModel.js";
 export const createRequest = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    const { requestIds,address,shippingDate,description } = req.body;
+    const { requestIds, address, shippingDate, description } = req.body;
 
     if (!token) {
       return res
@@ -102,7 +102,7 @@ export const createRequest = async (req, res) => {
       products: requestIds,
       address,
       shippingDate,
-      description
+      description,
     });
 
     // Update the status of the products to "requested"
@@ -123,9 +123,9 @@ export const createRequest = async (req, res) => {
 
 export const getDonerRequests = async (req, res) => {
   try {
-    console.log(req.userId)
+   
     const requestedProducts = await requestModel
-      .find({ donor:req.userId })
+      .find({ donor: req.userId })
       .populate("donor")
       .populate("partner")
       .populate("products").sort({updatedAt:-1});
@@ -133,7 +133,7 @@ export const getDonerRequests = async (req, res) => {
     res.status(200).json({
       success: true,
       data: requestedProducts,
-      message:"requests found successfully!!"
+      message: "requests found successfully!!",
     });
   } catch (error) {
     console.error(error);
@@ -143,8 +143,7 @@ export const getDonerRequests = async (req, res) => {
       error: error.message,
     });
   }
-}; 
-
+};
 
 
 export const getDonerRequestsById = async (req, res) => {
@@ -206,7 +205,7 @@ export const getRequests = async (req, res) => {
     res.status(200).json({
       success: true,
       data: requestedProducts,
-      message:"requests found successfully!!"
+      message: "requests found successfully!!",
     });
   } catch (error) {
     console.error(error);
@@ -216,4 +215,28 @@ export const getRequests = async (req, res) => {
       error: error.message,
     });
   }
-}; 
+};
+
+export const getAcceptedRequests = async (req, res) => {
+  try {
+    // Fetch all requests with the status "requested"
+    const requestedProducts = await requestModel
+      .find({ status: "assigned" })
+      .populate("donor")
+      .populate("partner")
+      .populate("products");
+
+    res.status(200).json({
+      success: true,
+      data: requestedProducts,
+      message: "requests found successfully!!",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};

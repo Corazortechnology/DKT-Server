@@ -8,6 +8,7 @@ import {
 } from "../controllers/addProductController.js";
 import {
   createRequest,
+  getAcceptedRequests,
   getDonerRequests,
   getDonerRequestsById,
   getDonerRequestsBy_Id,
@@ -37,11 +38,10 @@ const router = express.Router();
 // // DELETE: Remove a donor
 // router.delete("/:id", deleteDonor);
 
-
 // Add product (Single with image upload, Bulk with URL)
 // router.post("/add-product", authenticateToken, upload.single("image"), addProduct);
 
-router.get("/",authenticateToken,getDonorDetails)
+router.get("/", authenticateToken, getDonorDetails);
 router.post("/getDonorById",authenticateToken,getDonorById)
 router.get("/allDonor",authenticateToken,getAllDonor)
 router.post("/add-product", upload.single("images"), addProduct);
@@ -54,12 +54,13 @@ router.get("/requests", getRequests); // get requests
 
 //this both are same one is taking form token and in is body
 router.get("/requests/donor",authenticateToken,getDonerRequests); // get doner request by token 
-router.post("/requests/donor",authenticateToken,getDonerRequestsById); // get doner request by Id
+router.get("/acceptedRequests", getAcceptedRequests); // Create request
+router.post("/requests/donor", authenticateToken, getDonerRequestsById); // get doner request by Id
 
 //for admin basis on request id 
 router.post("/requests",authenticateToken,getDonerRequestsBy_Id); // get doner request by Id
 
-//adding gst rout 
-router.post("/gstInfo/add",authenticateToken,addGstDetails); // Create request
+//adding gst rout
+router.post("/gstInfo/add", authenticateToken, addGstDetails); // Create request
 
 export default router;
