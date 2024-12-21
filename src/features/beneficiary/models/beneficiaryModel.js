@@ -1,15 +1,5 @@
 import mongoose from "mongoose";
 
-const assetRequestSchema = new mongoose.Schema(
-  {
-    deviceType: { type: String, required: true },
-    quantity: { type: Number, required: true },
-    status: { type: String, default: "pending" }, // pending, approved, rejected
-    adminComments: { type: String },
-  },
-  { timestamps: true }
-);
-
 const beneficiarySchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -18,7 +8,11 @@ const beneficiarySchema = new mongoose.Schema(
     role: { type: String, default: "beneficiary" },
     schoolName: { type: String, required: true }, // Specific to beneficiaries
     otherDetails: { type: String },
-    assetRequests: [assetRequestSchema],
+    gstIn:[{
+      gst_number:{type: String,required: true},
+      company_name:{type: String,required: true},
+      company_address:{type: String,required: true},
+    }]
   },
   { timestamps: true }
 );

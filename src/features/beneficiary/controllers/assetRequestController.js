@@ -1,4 +1,5 @@
 import beneficiaryModel from "../models/beneficiaryModel.js";
+import beneficiaryRequestModel from "../models/beneficiaryRequestModel.js";
 
 // Create a new asset request
 export const createAssetRequest = async (req, res) => {
@@ -11,23 +12,17 @@ export const createAssetRequest = async (req, res) => {
         .json({ message: "Device type and quantity are required." });
     }
 
-    const beneficiary = await beneficiaryModel.findById(req.user.id);
-
-    if (!beneficiary) {
-      return res.status(404).json({ message: "Beneficiary not found." });
-    }
-
     const newRequest = {
       deviceType,
       quantity,
+      beneficiaryId: req.userId, // Assuming req.userId is set by middleware
     };
 
-    beneficiary.assetRequests.push(newRequest);
-    await beneficiary.save();
+    const request = await beneficiaryRequestModel.create(newRequest);
 
     res.status(201).json({
       message: "Asset request created successfully.",
-      request: newRequest,
+      request,
     });
   } catch (error) {
     res
@@ -36,18 +31,19 @@ export const createAssetRequest = async (req, res) => {
   }
 };
 
+
 // Get all asset requests for the beneficiary
 export const getAssetRequests = async (req, res) => {
   try {
-    const beneficiary = await beneficiaryModel
-      .findById(req.user.id)
-      .select("assetRequests");
+    const requests = await beneficiaryRequestModel
+      .find({ beneficiaryId: req.userId }).populate("beneficiaryId")
+      .sort({ createdAt: -1 }); // Fetch all requests for the logged-in beneficiary
 
-    if (!beneficiary) {
-      return res.status(404).json({ message: "Beneficiary not found." });
+    if (!requests || requests.length === 0) {
+      return res.status(404).json({ message: "No asset requests found." });
     }
 
-    res.status(200).json({ requests: beneficiary.assetRequests });
+    res.status(200).json({ requests });
   } catch (error) {
     res
       .status(500)
@@ -55,35 +51,33 @@ export const getAssetRequests = async (req, res) => {
   }
 };
 
+
 // Update request status (for admin usage)
 export const updateAssetRequestStatus = async (req, res) => {
   try {
-    const { beneficiaryId, requestId } = req.params;
+    const { requestId } = req.params;
     const { status, adminComments } = req.body;
 
-    const beneficiary = await beneficiaryModel.findById(beneficiaryId);
-
-    if (!beneficiary) {
-      return res.status(404).json({ message: "Beneficiary not found." });
-    }
-
-    const request = beneficiary.assetRequests.id(requestId);
+    const request = await beneficiaryRequestModel.findById(requestId);
 
     if (!request) {
       return res.status(404).json({ message: "Asset request not found." });
     }
 
+    // Update the status and admin comments
     request.status = status || request.status;
     request.adminComments = adminComments || request.adminComments;
 
-    await beneficiary.save();
+    await request.save();
 
-    res
-      .status(200)
-      .json({ message: "Request status updated successfully.", request });
+    res.status(200).json({
+      message: "Request status updated successfully.",
+      request,
+    });
   } catch (error) {
     res
       .status(500)
       .json({ message: "Internal server error.", error: error.message });
   }
 };
+

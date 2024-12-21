@@ -1,5 +1,7 @@
 import express from "express";
 import { createAssetRequest } from "../controllers/assetRequestController.js";
+import { authenticateToken } from "../../donor/middelwere/authenticateToken.js";
+import { addBeneficaryGstDetails } from "../controllers/addGstInfo.js";
 // import {
 //   getBeneficiaries,
 //   createBeneficiary,
@@ -19,6 +21,7 @@ const router = express.Router();
 // // DELETE: Delete a specific beneficiary
 // router.delete('/:id', deleteBeneficiary);
 
-router.post("/createAssetRequest", createAssetRequest);
+router.post("/createAssetRequest",authenticateToken,createAssetRequest);
+router.post("/gstInfo/add", authenticateToken, addBeneficaryGstDetails); // Create request
 
 export default router;
