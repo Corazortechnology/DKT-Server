@@ -24,5 +24,6 @@ const router = express.Router();
 
 router.put("/requested-products/status", updateRequestedProductStatus);
 router.post("/accept-request", acceptRequest);
+router.get("/get-acceptedrequest", acceptRequest);
 
 export default router;

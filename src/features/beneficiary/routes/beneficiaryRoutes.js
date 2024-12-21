@@ -1,4 +1,5 @@
 import express from "express";
+import { createAssetRequest } from "../controllers/assetRequestController.js";
 // import {
 //   getBeneficiaries,
 //   createBeneficiary,
@@ -17,5 +18,7 @@ const router = express.Router();
 
 // // DELETE: Delete a specific beneficiary
 // router.delete('/:id', deleteBeneficiary);
+
+router.post("/createAssetRequest", createAssetRequest);
 
 export default router;
