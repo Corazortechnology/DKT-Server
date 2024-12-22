@@ -4,15 +4,33 @@ import beneficiaryRequestModel from "../models/beneficiaryRequestModel.js";
 // Create a new asset request
 export const createAssetRequest = async (req, res) => {
   try {
-    const { deviceType, quantity } = req.body;
+    const { name, category, organizationName, address, deviceType, quantity } =
+      req.body;
+    console.log(
+      name,
+      category,
+      organizationName,
+      address,
+      deviceType,
+      quantity
+    );
 
-    if (!deviceType || !quantity) {
-      return res
-        .status(400)
-        .json({ message: "Device type and quantity are required." });
+    if (
+      !deviceType ||
+      !quantity ||
+      !name ||
+      !category ||
+      !organizationName ||
+      !address
+    ) {
+      return res.status(400).json({ message: "All fields are required." });
     }
 
     const newRequest = {
+      productName: name,
+      category,
+      organizationName,
+      address,
       deviceType,
       quantity,
       beneficiaryId: req.userId, // Assuming req.userId is set by middleware
@@ -31,12 +49,12 @@ export const createAssetRequest = async (req, res) => {
   }
 };
 
-
 // Get all asset requests for the beneficiary
 export const getAssetRequests = async (req, res) => {
   try {
     const requests = await beneficiaryRequestModel
-      .find({ beneficiaryId: req.userId }).populate("beneficiaryId")
+      .find({ beneficiaryId: req.userId })
+      .populate("beneficiaryId")
       .sort({ createdAt: -1 }); // Fetch all requests for the logged-in beneficiary
 
     if (!requests || requests.length === 0) {
@@ -50,7 +68,6 @@ export const getAssetRequests = async (req, res) => {
       .json({ message: "Internal server error.", error: error.message });
   }
 };
-
 
 // Update request status (for admin usage)
 export const updateAssetRequestStatus = async (req, res) => {
@@ -80,4 +97,3 @@ export const updateAssetRequestStatus = async (req, res) => {
       .json({ message: "Internal server error.", error: error.message });
   }
 };
-
