@@ -2,7 +2,7 @@ import express from "express";
 import { createAssetRequest } from "../controllers/assetRequestController.js";
 import { authenticateToken } from "../../donor/middelwere/authenticateToken.js";
 import { addBeneficaryGstDetails } from "../controllers/addGstInfo.js";
-import { getBeneficiaryDetails } from "../controllers/beneficiaryController.js";
+import { getAllBeneficiary, getAssetRequestsByBeneficiary, getBeneficiaryById, getBeneficiaryDetails } from "../controllers/beneficiaryController.js";
 
 // import {
 //   getBeneficiaries,
@@ -24,6 +24,9 @@ const router = express.Router();
 // router.delete('/:id', deleteBeneficiary);
 
 router.get('/detail',authenticateToken,getBeneficiaryDetails);
+router.get("/allBeneficiary",authenticateToken,getAllBeneficiary)
+router.post("/getBeneficiaryById",authenticateToken,getBeneficiaryById)
+router.get("/getBeneficiaryRequestsById/:id",authenticateToken,getAssetRequestsByBeneficiary)
 
 router.post("/createAssetRequest",authenticateToken,createAssetRequest);
 router.post("/gstInfo/add", authenticateToken, addBeneficaryGstDetails); // Create request
