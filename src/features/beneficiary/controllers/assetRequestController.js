@@ -74,6 +74,7 @@ export const updateAssetRequestStatus = async (req, res) => {
   try {
     const { requestId } = req.params;
     const { status, adminComments } = req.body;
+    console.log(status);
 
     const request = await beneficiaryRequestModel.findById(requestId);
 
@@ -88,12 +89,15 @@ export const updateAssetRequestStatus = async (req, res) => {
     await request.save();
 
     res.status(200).json({
+      success: true,
       message: "Request status updated successfully.",
       request,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Internal server error.", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Internal server error.",
+      error: error.message,
+    });
   }
 };

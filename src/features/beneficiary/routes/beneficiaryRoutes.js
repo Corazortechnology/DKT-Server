@@ -1,8 +1,18 @@
 import express from "express";
-import { createAssetRequest } from "../controllers/assetRequestController.js";
+import {
+  createAssetRequest,
+  updateAssetRequestStatus,
+} from "../controllers/assetRequestController.js";
 import { authenticateToken } from "../../donor/middelwere/authenticateToken.js";
 import { addBeneficaryGstDetails } from "../controllers/addGstInfo.js";
-import { getAllBeneficiary, getAssetRequestsByBeneficiary, getBeneficiaryById, getBeneficiaryDetails } from "../controllers/beneficiaryController.js";
+import {
+  getAllAssetRequests,
+  getAllBeneficiary,
+  getAssetRequestsByBeneficiary,
+  getAssetRequestsById,
+  getBeneficiaryById,
+  getBeneficiaryDetails,
+} from "../controllers/beneficiaryController.js";
 
 // import {
 //   getBeneficiaries,
@@ -23,12 +33,26 @@ const router = express.Router();
 // // DELETE: Delete a specific beneficiary
 // router.delete('/:id', deleteBeneficiary);
 
-router.get('/detail',authenticateToken,getBeneficiaryDetails);
-router.get("/allBeneficiary",authenticateToken,getAllBeneficiary)
-router.post("/getBeneficiaryById",authenticateToken,getBeneficiaryById)
-router.get("/getBeneficiaryRequestsById/:id",authenticateToken,getAssetRequestsByBeneficiary)
-
-router.post("/createAssetRequest",authenticateToken,createAssetRequest);
+router.get("/detail", authenticateToken, getBeneficiaryDetails);
+router.get("/allBeneficiary", authenticateToken, getAllBeneficiary);
+router.get("/allAssetsRequests", authenticateToken, getAllAssetRequests);
+router.post("/getBeneficiaryById", authenticateToken, getBeneficiaryById);
+router.get(
+  "/getBeneficiaryRequestsById/:id",
+  authenticateToken,
+  getAssetRequestsByBeneficiary
+);
+router.get(
+  "/getBeneficiaryRequestById/:id",
+  authenticateToken,
+  getAssetRequestsById
+);
+router.post("/createAssetRequest", authenticateToken, createAssetRequest);
 router.post("/gstInfo/add", authenticateToken, addBeneficaryGstDetails); // Create request
+router.post(
+  "/acceptRequest/:requestId",
+  authenticateToken,
+  updateAssetRequestStatus
+);
 
 export default router;
