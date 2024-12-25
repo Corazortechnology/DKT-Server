@@ -6,6 +6,20 @@ const adminSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, default: "admin" }, // Specific to admins
+    reports: [
+      {
+        beneficiaryId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Beneficiary",
+        },
+        requestId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "BeneficiaryRequest",
+        },
+        message: { type: String, required: true },
+        timestamp: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true }
 );

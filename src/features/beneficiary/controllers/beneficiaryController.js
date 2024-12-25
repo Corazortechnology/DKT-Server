@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import beneficiaryModel from "../models/beneficiaryModel.js";
 import beneficiaryRequestModel from "../models/beneficiaryRequestModel.js";
 
@@ -85,6 +86,46 @@ export const getAssetRequestsByBeneficiary = async (req, res) => {
     // Fetch all asset requests for the given beneficiaryId
     const requests = await beneficiaryRequestModel
       .find({ beneficiaryId: id })
+      .populate("beneficiaryId")
+      .sort({ createdAt: -1 });
+
+    if (!requests || requests.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No asset requests found for this beneficiary.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Asset requests retrieved successfully.",
+      requests,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal server error.",
+      error: error.message,
+    });
+  }
+};
+
+export const getAssetRequestsByBeneficiaryToken = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "Beneficiary ID is required.",
+      });
+    }
+
+    // Fetch all asset requests for the given beneficiaryId
+    const requests = await beneficiaryRequestModel
+      .find({ beneficiaryId: userId })
       .populate("beneficiaryId")
       .sort({ createdAt: -1 });
 

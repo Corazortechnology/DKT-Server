@@ -9,10 +9,12 @@ import {
   getAllAssetRequests,
   getAllBeneficiary,
   getAssetRequestsByBeneficiary,
+  getAssetRequestsByBeneficiaryToken,
   getAssetRequestsById,
   getBeneficiaryById,
   getBeneficiaryDetails,
 } from "../controllers/beneficiaryController.js";
+import { reportToAdmin } from "../controllers/reportController.js";
 
 // import {
 //   getBeneficiaries,
@@ -43,6 +45,11 @@ router.get(
   getAssetRequestsByBeneficiary
 );
 router.get(
+  "/getBeneficiaryRequestsByToken",
+  authenticateToken,
+  getAssetRequestsByBeneficiaryToken
+);
+router.get(
   "/getBeneficiaryRequestById/:id",
   authenticateToken,
   getAssetRequestsById
@@ -54,5 +61,7 @@ router.post(
   authenticateToken,
   updateAssetRequestStatus
 );
+
+router.post("/reportToAdmin", authenticateToken, reportToAdmin);
 
 export default router;
