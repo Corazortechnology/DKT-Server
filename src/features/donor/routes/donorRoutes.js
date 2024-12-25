@@ -2,6 +2,7 @@ import express from "express";
 import { upload } from "../../../middlewares/multer.js";
 import {
   addProduct,
+  getAllProducts,
   getDonorsProductUploadsById,
   getProductUploads,
   getProductUploadsById,
@@ -9,6 +10,7 @@ import {
 import {
   createRequest,
   getAcceptedRequests,
+  getAllRequests,
   getDonerRequests,
   getDonerRequestsById,
   getDonerRequestsBy_Id,
@@ -45,12 +47,14 @@ router.get("/", authenticateToken, getDonorDetails);
 router.post("/getDonorById",authenticateToken,getDonorById)
 router.get("/allDonor",authenticateToken,getAllDonor)
 router.post("/add-product", upload.single("images"), addProduct);
+router.get("/products",authenticateToken,getAllProducts)
 router.get("/get-myUploads", getProductUploads);
 router.post("/get-myUploadsById", getProductUploadsById);
 router.post("/getDonorUploadsById", getDonorsProductUploadsById);
 
 router.post("/create-requests", createRequest); // Create request
-router.get("/requests", getRequests); // get requests
+router.get("/requests",authenticateToken,getRequests); // get requests
+router.get("/allRequest",authenticateToken,getAllRequests); // get requests
 
 //this both are same one is taking form token and in is body
 router.get("/requests/donor",authenticateToken,getDonerRequests); // get doner request by token 

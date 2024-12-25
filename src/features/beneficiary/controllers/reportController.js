@@ -46,13 +46,10 @@ export const getAllReports = async (req, res) => {
       .populate("beneficiaryId")
       .populate({
         path: "requestId",
-        populate: {
-          path: "assetId", // Assuming the BeneficiaryRequest has an assetId reference
-          model: "Asset", // Replace "Asset" with the actual model name for assets
-        },
-      });
+        populate:"beneficiaryId"
+      }).sort({createdAt:-1});
 
-    res.status(200).json(reports);
+    res.status(200).json({success:true,reports,message:"getting reports successfull"});
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });

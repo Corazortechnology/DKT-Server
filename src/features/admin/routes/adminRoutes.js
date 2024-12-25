@@ -1,4 +1,6 @@
 import express from "express";
+import { authenticateToken } from "../../donor/middelwere/authenticateToken.js";
+import { getAllReports } from "../../beneficiary/controllers/reportController.js";
 // import {
 //   getAllAdmins,
 //   createAdmin,
@@ -19,5 +21,7 @@ const router = express.Router();
 
 // // DELETE: Remove an admin
 // router.delete("/:id", deleteAdmin);
+
+router.get("/reports",authenticateToken,getAllReports)
 
 export default router;
