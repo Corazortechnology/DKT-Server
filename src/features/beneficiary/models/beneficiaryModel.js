@@ -8,6 +8,11 @@ const beneficiarySchema = new mongoose.Schema(
     role: { type: String, default: "beneficiary" },
     schoolName: { type: String, required: true }, // Specific to beneficiaries
     otherDetails: { type: String },
+    gstIn:[{
+      gst_number:{type: String,required: true},
+      company_name:{type: String,required: true},
+      company_address:{type: String,required: true},
+    }]
   },
   { timestamps: true }
 );

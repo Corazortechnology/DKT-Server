@@ -193,6 +193,30 @@ export const getDonerRequestsBy_Id = async (req, res) => {
   }
 }; 
 
+export const getAllRequests = async (req, res) => {
+  try {
+    // Fetch all requests with the status "requested"
+    const requestedProducts = await requestModel
+      .find()
+      .populate("donor")
+      .populate("partner")
+      .populate("products").sort({updatedAt:-1});
+
+    res.status(200).json({
+      success: true,
+      data: requestedProducts,
+      message: "getting requests successfully!!",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
+
 export const getRequests = async (req, res) => {
   try {
     // Fetch all requests with the status "requested"

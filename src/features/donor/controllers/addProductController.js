@@ -264,3 +264,31 @@ export const getDonorsProductUploadsById = async (req, res) => {
       .json({ success: false, message: "Error fetching product uploads" });
   }
 };
+
+
+export const getAllProducts= async (req, res) => {
+  
+  try {
+    // Find the product uploads for the donor and populate the products
+    const productsUploads = await productModel
+      .find()
+
+    if (!productsUploads || productsUploads.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No product found" });
+    }
+
+    // Return the product uploads with populated products
+    return res.status(200).json({
+      success: true,
+      message: "get all products successfully",
+      productsUploads,
+    });
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Error fetching product " });
+  }
+};

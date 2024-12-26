@@ -30,12 +30,14 @@ app.use(bodyParser.json());
 authModule(app); // Routes for login and authentication (e.g., /api/auth)
 
 // Feature Modules
-app.use("/api/v1/beneficiary", protect, beneficiaryModule);
+// app.use("/api/v1/beneficiary", protect, beneficiaryModule);
 // app.use("/api/v1/donor", protect, donorModule);
-app.use("/api/v1/admin", protect, isAdmin, adminModule);
+// app.use("/api/v1/admin", protect, isAdmin, adminModule);
+adminModule(app)
 // app.use("/api/v1/partner", protect, partnerModule);
 partnerModule(app);
 donorModule(app);
+beneficiaryModule(app);
 
 // Error Handler
 app.use(errorHandler);
