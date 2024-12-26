@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { uploadToAzureBlob } from "../../../utils/azureBlob.js";
 import productModel from "../models/productModel.js";
 import productUploadsModel from "../models/productUploadsModel.js";
+import { sendEmail } from "../../../services/emailService.js";
 
 // Add Product (Single or Bulk)
 
@@ -78,10 +79,12 @@ export const addProduct = async (req, res) => {
       await donor.save();
 
       // Create an entry in the productUpload collection
-      await productUploadsModel.create({
+      const uploadedProduct = await productUploadsModel.create({
         donerId: donor._id,
         products: createdProductIds,
       });
+
+      await sendEmail(donor.email,"assetUploads",{assetId:uploadedProduct._id});
 
       return res.status(200).json({
         success: true,
@@ -125,6 +128,9 @@ export const addProduct = async (req, res) => {
         donerId: donor._id,
         products: [newProduct._id],
       });
+
+      
+      await sendEmail(donor.email,"assetUploads",{assetId:newProduct._id});
 
       return res.status(200).json({
         success: true,

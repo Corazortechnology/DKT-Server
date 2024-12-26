@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import partnerModel from "../models/partnerModel.js";
 import requestModel from "../../donor/models/requestModel.js";
 import productModel from "../../donor/models/productModel.js";
+import { sendEmail } from "../../../services/emailService.js";
 
 export const acceptRequest = async (req, res) => {
   try {
@@ -40,7 +41,7 @@ export const acceptRequest = async (req, res) => {
         .json({ success: false, message: "Invalid requestId format" });
     }
 
-    const request = await requestModel.findById(requestId).populate("products");
+    const request = await requestModel.findById(requestId).populate("products").populate("donor");
     if (!request) {
       return res
         .status(404)
@@ -64,6 +65,8 @@ export const acceptRequest = async (req, res) => {
       { _id: { $in: request.products.map((product) => product._id) } },
       { $set: { status: "assigned" } }
     );
+
+    await sendEmail(request.donor.email,"acceptDelevery",{address:request.address,pickupDate:request.shippingDate,requestId:request._id})
 
     res.status(200).json({
       success: true,

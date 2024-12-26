@@ -1,5 +1,7 @@
 import beneficiaryRequestModel from "../models/beneficiaryRequestModel.js";
 import ReportModel from "../../admin/models/reportingModel.js";
+import { sendEmail } from "../../../services/emailService.js";
+import beneficiaryModel from "../models/beneficiaryModel.js";
 
 // Create a new report
 export const reportToAdmin = async (req, res) => {
@@ -27,6 +29,11 @@ export const reportToAdmin = async (req, res) => {
     });
 
     await newReport.save();
+     
+    //getting beneficeary
+    const getBeneficeary = await beneficiaryModel.findById(beneficiaryId)
+    //sending email
+    await sendEmail(getBeneficeary.email,"report",{reportId:newReport._id})
 
     res.status(200).json({
       success: true,

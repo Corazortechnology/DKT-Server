@@ -33,7 +33,162 @@ export const sendEmail = async (email, type, data) => {
         <p>Best regards,<br />The DKT Platform Team</p>
         </div>
     `;
-  } else if (type === "resetPassword") {
+  } else if(type === "assetUploads"){
+    subject = "Asset Upload Confirmation";
+    html = `
+    <div>
+    <p>
+      Your asset upload has been successful. The reference ID for this asset is: 
+      <strong>${data.assetId}</strong>. 
+      Please keep this ID for your records and future reference.
+    </p>
+    <p>
+      If you did not upload, please disregard this message or reach out to our support team for assistance.
+    </p>
+    <br />
+    <p>
+      Best regards,<br />
+      The DKT Platform Team
+    </p>
+  </div>
+    `;
+  }
+  else if(type === "requestDelivery"){
+    subject = "Delivery Request Confirmation";
+    html = `
+    <div>
+  <p>
+    Your delivery request has been successfully initiated. Below are the details for your reference:
+  </p>
+  <ul>
+    <li><strong>Request ID:</strong> ${data.requestId}</li>
+    <li><strong>Pickup Address:</strong> ${data.address}</li>
+    <li><strong>Scheduled Pickup Date:</strong> ${data.shippingDate}</li>
+  </ul>
+  <p>
+    Please ensure that the items are ready for pickup at the specified address and date. If you have any questions or need to make changes to the schedule, please contact our support team.
+  </p>
+  <br />
+  <p>
+    Best regards,<br />
+    The DKT Platform Team
+  </p>
+</div>
+
+    `;
+  }
+  else if(type === "acceptDelevery"){
+    subject = "Delivery Request Accepted";
+    html = `
+    <div>
+    <p>
+      We are pleased to inform you that your delivery request has been accepted. Below are the details for your reference:
+    </p>
+    <ul>
+      <li><strong>Request ID:</strong> ${data.requestId}</li>
+      <li><strong>Pickup Address:</strong> ${data.address}</li>
+      <li><strong>Scheduled Pickup Date:</strong> ${data.pickupDate}</li>
+    </ul>
+    <p>
+      Please ensure the items are ready for pickup at the specified address and date. Our team will arrive as scheduled to complete the process. If you need to make any adjustments, kindly contact our support team at your earliest convenience.
+    </p>
+    <br />
+    <p>
+      Thank you for using our service. We look forward to assisting you!
+    </p>
+    <br />
+    <p>
+      Best regards,<br />
+      The DKT Platform Team
+    </p>
+  </div>
+  
+    `;
+  }
+  else if(type === "assetRequest"){
+    subject = "Asset Request Confirmation";
+    html = `
+    <div>
+    
+    <p>
+      Your asset request has been successfully submitted. Below are the details for your reference:
+    </p>
+    <ul>
+      <li><strong>Request ID:</strong> ${data.requestId}</li>
+    </ul>
+    <p>
+      Please use the Request ID to track the status of your request. If you need further assistance or have any queries, feel free to reach out to our support team.
+    </p>
+    <br />
+    <p>
+      Thank you for using our service. We are committed to processing your request promptly!
+    </p>
+    <br />
+    <p>
+      Best regards,<br />
+      The DKT Platform Team
+    </p>
+  </div>
+    `;
+  }
+  else if(type === "assetRequestResponce"){
+    subject = "Asset Request Update";
+    html = `
+    <div>
+
+    <p>
+      We have reviewed your asset request, and here is the update for your reference:
+    </p>
+    <ul>
+      <li><strong>Request ID:</strong> ${data.requestId}</li>
+      <li><strong>Status:</strong> ${data.status}</li>
+    </ul>
+    <p>
+      ${data.status === 'approved' 
+        ? 'Congratulations! Your request has been approved. We will process it shortly and notify you of the next steps.' 
+        : 'Unfortunately, your request has been rejected. If you have any questions or would like to discuss further, please contact our support team.'}
+    </p>
+    <br />
+    <p>
+      Thank you for using our service. We appreciate your understanding and support!
+    </p>
+    <br />
+    <p>
+      Best regards,<br />
+      The DKT Platform Team
+    </p>
+  </div>
+  
+    `;
+  }
+  else if(type === "report"){
+    subject = "Report Generation Confirmation";
+    html = `
+    <div>
+    <p>
+      Your report has been successfully generated. Below are the details for your reference:
+    </p>
+    <ul>
+      <li><strong>Report ID:</strong> ${data.reportId}</li>
+    </ul>
+    <p>
+      You can use the Report ID to track or access this report at any time. If you need further assistance or encounter any issues, please reach out to our support team.
+    </p>
+    <br />
+    <p>
+      Thank you for using our service. We hope this report meets your needs!
+    </p>
+    <br />
+    <p>
+      Best regards,<br />
+      The DKT Platform Team
+    </p>
+  </div>
+  
+  
+    `;
+  }
+  else if (type === "resetPassword") {
     subject = "Reset Your Password - OTP Verification";
     html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
