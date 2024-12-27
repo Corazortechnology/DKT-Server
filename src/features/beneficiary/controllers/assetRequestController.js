@@ -1,3 +1,4 @@
+import { sendEmail } from "../../../services/emailService.js";
 import beneficiaryModel from "../models/beneficiaryModel.js";
 import beneficiaryRequestModel from "../models/beneficiaryRequestModel.js";
 
@@ -37,6 +38,12 @@ export const createAssetRequest = async (req, res) => {
     };
 
     const request = await beneficiaryRequestModel.create(newRequest);
+
+     
+    //getting beneficeary
+    const getBeneficeary = await beneficiaryModel.findById(req.userId)
+
+    await sendEmail(getBeneficeary.email,"assetRequest",{requestId:request._id})
 
     res.status(201).json({
       message: "Asset request created successfully.",
@@ -87,6 +94,9 @@ export const updateAssetRequestStatus = async (req, res) => {
     request.adminComments = adminComments || request.adminComments;
 
     await request.save();
+    const benedicearyId = request.beneficiaryId
+    const beneficeary = await beneficiaryModel.findById(benedicearyId);
+    await sendEmail(beneficeary.email,"assetRequestResponce",{requestId:request._id,status})
 
     res.status(200).json({
       success: true,

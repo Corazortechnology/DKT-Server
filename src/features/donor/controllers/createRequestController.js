@@ -3,6 +3,7 @@ import Donor from "../models/donorModel.js";
 import requestModel from "../models/requestModel.js";
 import jwt from "jsonwebtoken";
 import productModel from "../models/productModel.js";
+import { sendEmail } from "../../../services/emailService.js";
 
 // export const createRequest = async (req, res) => {
 //   try {
@@ -110,6 +111,10 @@ export const createRequest = async (req, res) => {
       { _id: { $in: requestIds } },
       { $set: { status: "requested" } }
     );
+    await sendEmail(donor.email, "requestDelivery", {
+      address,
+      shippingDate, requestId: request._id
+    })
 
     res.status(201).json({
       message: "Change products status and Request created successfully",
@@ -123,12 +128,12 @@ export const createRequest = async (req, res) => {
 
 export const getDonerRequests = async (req, res) => {
   try {
-   
+
     const requestedProducts = await requestModel
       .find({ donor: req.userId })
       .populate("donor")
       .populate("partner")
-      .populate("products").sort({updatedAt:-1});
+      .populate("products").sort({ updatedAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -148,17 +153,17 @@ export const getDonerRequests = async (req, res) => {
 
 export const getDonerRequestsById = async (req, res) => {
   try {
-    const {donerId} = req.body;
+    const { donerId } = req.body;
     const requestedProducts = await requestModel
-      .find({ donor:donerId })
+      .find({ donor: donerId })
       .populate("donor")
       .populate("partner")
-      .populate("products").sort({updatedAt:-1});
+      .populate("products").sort({ updatedAt: -1 });
 
     res.status(200).json({
       success: true,
       data: requestedProducts,
-      message:"requests found successfully!!"
+      message: "requests found successfully!!"
     });
   } catch (error) {
     console.error(error);
@@ -168,20 +173,20 @@ export const getDonerRequestsById = async (req, res) => {
       error: error.message,
     });
   }
-}; 
+};
 export const getDonerRequestsBy_Id = async (req, res) => {
   try {
-    const {requestId} = req.body;
+    const { requestId } = req.body;
     const requestedProducts = await requestModel
-      .find({ _id:requestId })
+      .find({ _id: requestId })
       .populate("donor")
       .populate("partner")
-      .populate("products").sort({updatedAt:-1});
+      .populate("products").sort({ updatedAt: -1 });
 
     res.status(200).json({
       success: true,
       data: requestedProducts,
-      message:"requests found successfully!!"
+      message: "requests found successfully!!"
     });
   } catch (error) {
     console.error(error);
@@ -191,7 +196,7 @@ export const getDonerRequestsBy_Id = async (req, res) => {
       error: error.message,
     });
   }
-}; 
+};
 
 export const getAllRequests = async (req, res) => {
   try {
@@ -200,7 +205,7 @@ export const getAllRequests = async (req, res) => {
       .find()
       .populate("donor")
       .populate("partner")
-      .populate("products").sort({updatedAt:-1});
+      .populate("products").sort({ updatedAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -224,7 +229,7 @@ export const getRequests = async (req, res) => {
       .find({ status: "requested" })
       .populate("donor")
       .populate("partner")
-      .populate("products").sort({updatedAt:-1});
+      .populate("products").sort({ updatedAt: -1 });
 
     res.status(200).json({
       success: true,
