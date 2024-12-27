@@ -29,8 +29,8 @@ import { authorizeRoles } from "../../../middlewares/authMiddleware.js";
 const router = express.Router();
 
 // registration
-router.post("/register/request-otp", otpLimiter, requestOtpBeforSignup);
-router.post("/register", registerLimiter, registerUser);
+router.post("/register/request-otp",  requestOtpBeforSignup);
+router.post("/register", registerUser);
 
 // login
 router.post("/request-otp", requestOtp);
@@ -38,7 +38,7 @@ router.post("/login-with-otp", loginWithOtp);
 router.post("/login-with-google", loginWithGoogle);
 
 // reset password
-router.post("/request-reset-password-otp", otpLimiter, requestResetPasswordOtp);
+router.post("/request-reset-password-otp", requestResetPasswordOtp);
 router.post("/verify-reset-password-otp", verifyResetPasswordOtp);
 router.post("/reset-password", resetPassword);
 
