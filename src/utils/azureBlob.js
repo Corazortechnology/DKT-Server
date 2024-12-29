@@ -9,6 +9,8 @@ const containerClient = blobServiceClient.getContainerClient(
 );
 
 export const uploadToAzureBlob = async (file) => {
+  console.log(file," hhh")
+
   try {
     const blobName = `${uuidv4()}-${file.originalname}`;
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);

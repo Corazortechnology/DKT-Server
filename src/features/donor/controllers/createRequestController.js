@@ -109,7 +109,7 @@ export const createRequest = async (req, res) => {
     // Update the status of the products to "requested"
     await productModel.updateMany(
       { _id: { $in: requestIds } },
-      { $set: { status: "requested" } }
+      { $set: { status: "Requested" } }
     );
     await sendEmail(donor.email, "requestDelivery", {
       address,
