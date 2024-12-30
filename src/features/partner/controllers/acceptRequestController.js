@@ -48,7 +48,7 @@ export const acceptRequest = async (req, res) => {
         .json({ success: false, message: "Request not found" });
     }
 
-    if (request.status !== "requested") {
+    if (request.status !== "Requested") {
       return res.status(400).json({
         success: false,
         message: "Request is not in a state that can be accepted",
@@ -56,14 +56,14 @@ export const acceptRequest = async (req, res) => {
     }
 
     // Update request status and assign partner
-    request.status = "assigned";
+    request.status = "Assigned";
     request.partner = partnerId;
     await request.save();
 
     // Update product statuses to "assigned"
     await productModel.updateMany(
       { _id: { $in: request.products.map((product) => product._id) } },
-      { $set: { status: "assigned" } }
+      { $set: { status: "Assigned" } }
     );
 
     await sendEmail(request.donor.email,"acceptDelevery",{address:request.address,pickupDate:request.shippingDate,requestId:request._id})

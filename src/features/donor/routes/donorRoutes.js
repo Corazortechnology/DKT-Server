@@ -44,25 +44,25 @@ const router = express.Router();
 // router.post("/add-product", authenticateToken, upload.single("image"), addProduct);
 
 router.get("/", authenticateToken, getDonorDetails);
-router.post("/getDonorById",authenticateToken,getDonorById)
-router.get("/allDonor",authenticateToken,getAllDonor)
-router.post("/add-product", upload.single("images"), addProduct);
-router.get("/products",authenticateToken,getAllProducts)
+router.post("/getDonorById", authenticateToken, getDonorById)
+router.get("/allDonor", authenticateToken, getAllDonor)
+router.post("/add-product", authenticateToken, upload.single("images"), addProduct);
+router.get("/products", authenticateToken, getAllProducts)
 router.get("/get-myUploads", getProductUploads);
 router.post("/get-myUploadsById", getProductUploadsById);
 router.post("/getDonorUploadsById", getDonorsProductUploadsById);
 
 router.post("/create-requests", createRequest); // Create request
-router.get("/requests",authenticateToken,getRequests); // get requests
-router.get("/allRequest",authenticateToken,getAllRequests); // get requests
+router.get("/requests", authenticateToken, getRequests); // get requests
+router.get("/allRequest", authenticateToken, getAllRequests); // get requests
 
 //this both are same one is taking form token and in is body
-router.get("/requests/donor",authenticateToken,getDonerRequests); // get doner request by token 
+router.get("/requests/donor", authenticateToken, getDonerRequests); // get doner request by token 
 router.get("/acceptedRequests", getAcceptedRequests); // Create request
 router.post("/requests/donor", authenticateToken, getDonerRequestsById); // get doner request by Id
 
 //for admin basis on request id 
-router.post("/requests",authenticateToken,getDonerRequestsBy_Id); // get doner request by Id
+router.post("/requests", authenticateToken, getDonerRequestsBy_Id); // get doner request by Id
 
 //adding gst rout
 router.post("/gstInfo/add", authenticateToken, addGstDetails); // Create request
