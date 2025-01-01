@@ -6,8 +6,8 @@ export const approveOrRejetUploads = async (req, res) => {
     try {
         const { id, status } = req.body
         // Find the product uploads for the donor and populate the products
-        const assetsUpload = await productUploadsModel.find({ _id: id })
-
+        const assetsUpload = await productUploadsModel.findOne({ _id: id })
+         console.log(assetsUpload)
         if(!assetsUpload){
             res.status(404).json({success:false, message: "upload not found" });
         }
