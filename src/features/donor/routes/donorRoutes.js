@@ -3,6 +3,7 @@ import { upload } from "../../../middlewares/multer.js";
 import {
   addProduct,
   getAllProducts,
+  getAllUploads,
   getDonorsProductUploadsById,
   getProductUploads,
   getProductUploadsById,
@@ -49,6 +50,7 @@ router.get("/allDonor", authenticateToken, getAllDonor)
 router.post("/add-product", authenticateToken, upload.single("images"), addProduct);
 router.get("/products", authenticateToken, getAllProducts)
 router.get("/get-myUploads", getProductUploads);
+router.get("/getallUploads",authenticateToken,getAllUploads);
 router.post("/get-myUploadsById", getProductUploadsById);
 router.post("/getDonorUploadsById", getDonorsProductUploadsById);
 

@@ -1,6 +1,7 @@
 import express from "express";
 import { authenticateToken } from "../../donor/middelwere/authenticateToken.js";
 import { getAllReports } from "../../beneficiary/controllers/reportController.js";
+import { approveOrRejetUploads } from "../controllers/approveOrRejectUploads.js";
 // import {
 //   getAllAdmins,
 //   createAdmin,
@@ -23,5 +24,7 @@ const router = express.Router();
 // router.delete("/:id", deleteAdmin);
 
 router.get("/reports",authenticateToken,getAllReports)
+
+router.post("/approveOrRejectAssetUploads",authenticateToken,approveOrRejetUploads)
 
 export default router;

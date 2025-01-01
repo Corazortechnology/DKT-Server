@@ -170,7 +170,7 @@ export const addProduct = async (req, res) => {
     // Look for the donor by userId
     const donor = await Donor.findById(userId);
     if (!donor) {
-      return res
+      return res 
         .status(404)
         .json({ success: false, message: "Donor not found" });
     }
@@ -321,7 +321,35 @@ export const addProduct = async (req, res) => {
 };
 
 
-// get product controler
+// get all uploads
+export const getAllUploads = async (req, res) => {
+  try {
+    // Find the product uploads for the donor and populate the products
+    const productsUploads = await productUploadsModel
+      .find()
+      .populate("donerId")
+      .populate("products")
+      .sort({createdAt:-1}); // Populate the products field with product details
+
+    if (!productsUploads || productsUploads.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No product uploads found" });
+    }
+
+    // Return the product uploads with populated products
+    return res.status(200).json({
+      success: true,
+      message: "Product uploads retrieved successfully",
+      productsUploads,
+    });
+  } catch (error) {
+    console.error("Error fetching product uploads:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Error fetching product uploads" });
+  }
+};
 
 // Get all product uploads for the authenticated donor
 export const getProductUploads = async (req, res) => {
