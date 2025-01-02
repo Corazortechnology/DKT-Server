@@ -16,7 +16,7 @@ export const approveOrRejetUploads = async (req, res) => {
         // Update product statuses to "assigned"
         await productModel.updateMany(
             { _id: { $in: assetsUpload.products.map((product) => product._id) } },
-            { $set: { status: status } }
+            { $set: { adminApproval: status } }
         );
         await assetsUpload.save();
         res.status(200).json({ success:true,message: "status updated successfully!!" });
