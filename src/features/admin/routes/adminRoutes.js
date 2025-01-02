@@ -2,6 +2,7 @@ import express from "express";
 import { authenticateToken } from "../../donor/middelwere/authenticateToken.js";
 import { getAllReports } from "../../beneficiary/controllers/reportController.js";
 import { approveOrRejetUploads } from "../controllers/approveOrRejectUploads.js";
+import { approveUser } from "../controllers/approvedOrRejectUser.js";
 // import {
 //   getAllAdmins,
 //   createAdmin,
@@ -23,8 +24,13 @@ const router = express.Router();
 // // DELETE: Remove an admin
 // router.delete("/:id", deleteAdmin);
 
-router.get("/reports",authenticateToken,getAllReports)
+router.get("/reports", authenticateToken, getAllReports);
 
-router.post("/approveOrRejectAssetUploads",authenticateToken,approveOrRejetUploads)
+router.post(
+  "/approveOrRejectAssetUploads",
+  authenticateToken,
+  approveOrRejetUploads
+);
+router.post("/approveOrRejectUsers", approveUser);
 
 export default router;

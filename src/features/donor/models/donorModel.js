@@ -7,15 +7,24 @@ const donorSchema = new mongoose.Schema(
     password: { type: String, required: true },
     role: { type: String, default: "donor" },
     donationDetails: { type: String },
-    products: [{
-      type:mongoose.Schema.Types.ObjectId,
-      ref:"Product"
-    }],
-    gstIn:[{
-      gst_number:{type: String,required: true},
-      company_name:{type: String,required: true},
-      company_address:{type: String,required: true},
-    }]
+    products: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
+    gstIn: [
+      {
+        gst_number: { type: String, required: true },
+        company_name: { type: String, required: true },
+        company_address: { type: String, required: true },
+      },
+    ],
+    verify: {
+      type: String,
+      default: "Pending",
+      enum: ["Pending", "Approved", "Reject"],
+    },
   },
   { timestamps: true }
 );

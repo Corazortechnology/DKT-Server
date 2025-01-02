@@ -72,7 +72,7 @@ export const loginWithOtp = async (req, res) => {
     }
 
     const user = await SectionModel.findOne({ email });
-   
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -84,6 +84,18 @@ export const loginWithOtp = async (req, res) => {
     const isOtpValid = await verifyOTP(email, otp);
     if (!isOtpValid) {
       return res.status(400).json({ success: false, message: "Invalid OTP" });
+    }
+
+    // Check if user is approved
+    if (user.verify !== "Approved") {
+      let message = "Your account is under review.";
+      if (user.verify === "Reject") {
+        message = "Your account request has been rejected.";
+      }
+      return res.status(403).json({
+        success: false,
+        message,
+      });
     }
 
     // Generate JWT
@@ -120,6 +132,17 @@ export const loginWithGoogle = async (req, res) => {
         success: false,
         message: "Email not registered in this section",
       });
+    // Check if user is approved
+    if (user.verify !== "Approved") {
+      let message = "Your account is under review.";
+      if (user.verify === "Reject") {
+        message = "Your account request has been rejected.";
+      }
+      return res.status(403).json({
+        success: false,
+        message,
+      });
+    }
 
     const jwtToken = jwt.sign(
       { email: payload.email, section, role: user.role, userId: user._id },
@@ -150,7 +173,6 @@ export const getUserName = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid section" });
     }
-  
 
     // Find user by email
     const user = await SectionModel.findOne({ email });
