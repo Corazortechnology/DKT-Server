@@ -7,7 +7,13 @@ const partnerSchema = new mongoose.Schema(
     password: { type: String, required: true },
     role: { type: String, default: "partner" },
     servicesProvided: { type: String },
+    verify: {
+      type: String,
+      default: "Pending",
+      enum: ["Pending", "Approved", "Reject"],
+    },
   },
+
   { timestamps: true }
 );
 

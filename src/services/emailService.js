@@ -33,7 +33,7 @@ export const sendEmail = async (email, type, data) => {
         <p>Best regards,<br />The DKT Platform Team</p>
         </div>
     `;
-  } else if(type === "assetUploads"){
+  } else if (type === "assetUploads") {
     subject = "Asset Upload Confirmation";
     html = `
     <div>
@@ -52,8 +52,7 @@ export const sendEmail = async (email, type, data) => {
     </p>
   </div>
     `;
-  }
-  else if(type === "requestDelivery"){
+  } else if (type === "requestDelivery") {
     subject = "Delivery Request Confirmation";
     html = `
     <div>
@@ -76,8 +75,7 @@ export const sendEmail = async (email, type, data) => {
 </div>
 
     `;
-  }
-  else if(type === "acceptDelevery"){
+  } else if (type === "acceptDelevery") {
     subject = "Delivery Request Accepted";
     html = `
     <div>
@@ -104,8 +102,7 @@ export const sendEmail = async (email, type, data) => {
   </div>
   
     `;
-  }
-  else if(type === "assetRequest"){
+  } else if (type === "assetRequest") {
     subject = "Asset Request Confirmation";
     html = `
     <div>
@@ -130,8 +127,7 @@ export const sendEmail = async (email, type, data) => {
     </p>
   </div>
     `;
-  }
-  else if(type === "assetRequestResponce"){
+  } else if (type === "assetRequestResponce") {
     subject = "Asset Request Update";
     html = `
     <div>
@@ -144,9 +140,11 @@ export const sendEmail = async (email, type, data) => {
       <li><strong>Status:</strong> ${data.status}</li>
     </ul>
     <p>
-      ${data.status === 'approved' 
-        ? 'Congratulations! Your request has been approved. We will process it shortly and notify you of the next steps.' 
-        : 'Unfortunately, your request has been rejected. If you have any questions or would like to discuss further, please contact our support team.'}
+      ${
+        data.status === "approved"
+          ? "Congratulations! Your request has been approved. We will process it shortly and notify you of the next steps."
+          : "Unfortunately, your request has been rejected. If you have any questions or would like to discuss further, please contact our support team."
+      }
     </p>
     <br />
     <p>
@@ -160,8 +158,7 @@ export const sendEmail = async (email, type, data) => {
   </div>
   
     `;
-  }
-  else if(type === "report"){
+  } else if (type === "report") {
     subject = "Report Generation Confirmation";
     html = `
     <div>
@@ -187,8 +184,7 @@ export const sendEmail = async (email, type, data) => {
   
   
     `;
-  }
-  else if (type === "resetPassword") {
+  } else if (type === "resetPassword") {
     subject = "Reset Your Password - OTP Verification";
     html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
@@ -210,8 +206,50 @@ export const sendEmail = async (email, type, data) => {
       <div>
         <h3>Welcome, ${data.name || data.companyName || data.partnerName}!</h3>
         <p>Thank you for registering on our platform. We are excited to have you onboard.</p>
-        <p>If you have any questions, feel free to reach out to our support team.</p>
+<p>Your registration is currently under review by our admin team. Once your profile is approved, you will receive a confirmation email and will be able to log in to your account.</p>
+<p>If you have any questions or need assistance, feel free to reach out to our support team.</p>
+
+
         <p>Best regards,<br />The DKT Platform Team</p>
+      </div>
+    `;
+  } else if (type === "subjectApproved") {
+    subject = "Profile Approval Confirmation";
+    html = `
+      <div>
+        <p>
+          Dear ${data.name || data.companyName || data.partnerName}, 
+        </p>
+        <p>
+          Congratulations! Your profile has been successfully approved. You can now log in to your account and access the platform.
+        </p>
+        <p>
+          Thank you for choosing our platform. We are excited to have you onboard!
+        </p>
+        <br />
+        <p>
+          Best regards,<br />
+          The Platform Team
+        </p>
+      </div>`;
+  } else if (type === "subjectRejected") {
+    subject = "Profile Rejection Notification";
+    html = `
+      <div>
+        <p>
+          Dear ${data.name || data.companyName || data.partnerName}, 
+        </p>
+        <p>
+          We regret to inform you that your profile has been reviewed and could not be approved at this time.
+        </p>
+        <p>
+          If you believe this is an error or have any questions, please contact our support team for assistance.
+        </p>
+        <br />
+        <p>
+          Best regards,<br />
+          The Platform Team
+        </p>
       </div>
     `;
   } else if (type === "register") {
