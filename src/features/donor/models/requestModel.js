@@ -23,8 +23,8 @@ const requestSchema = new mongoose.Schema(
     ],
     status: {
       type: String,
-      default: "requested",
-      enum: ["requested", "assigned", "in-progress", "delivered"],
+      default: "Requested",
+      enum: ["Requested", "Assigned", "In-progress", "Delivered"],
     },
   },
   { timestamps: true }
