@@ -6,7 +6,7 @@ const adminSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, default: "admin" }, // Specific to admins
-    adminApproval:{
+    verify:{
       type: String,
       default: "Approved",
       enum: ["Pending","Approved", "Reject"],
@@ -18,7 +18,7 @@ const adminSchema = new mongoose.Schema(
           ref: "Beneficiary",
         },
         requestId: {
-          type: mongoose.Schema.Types.ObjectId,
+          type: mongoose.Schema.Types.ObjectId, 
           ref: "BeneficiaryRequest",
         },
         message: { type: String, required: true },
