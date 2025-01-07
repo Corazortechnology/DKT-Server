@@ -226,7 +226,7 @@ export const getRequests = async (req, res) => {
   try {
     // Fetch all requests with the status "requested"
     const requestedProducts = await requestModel
-      .find({ status: "requested" })
+      .find({ status: "Requested" })
       .populate("donor")
       .populate("partner")
       .populate("products").sort({ updatedAt: -1 });
