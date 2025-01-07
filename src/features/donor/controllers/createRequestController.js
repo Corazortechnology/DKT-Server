@@ -87,7 +87,7 @@ export const createRequest = async (req, res) => {
     // Check if all products exist and are available
     const products = await productModel.find({
       _id: { $in: requestIds },
-      status: "available",
+      status: "Available",
     });
 
     if (products.length !== requestIds.length) {
