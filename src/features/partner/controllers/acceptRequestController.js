@@ -48,13 +48,6 @@ export const handleDeleveryRequest = async (req, res) => {
         .json({ success: false, message: "Request not found" });
     }
 
-    if (request.status !== "Requested") {
-      return res.status(400).json({
-        success: false,
-        message: "Request is not in a state that can be accepted",
-      });
-    }
-
     // Update request status and assign partner
     request.status = status;
     request.partner = partnerId;
