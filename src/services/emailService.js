@@ -206,10 +206,8 @@ export const sendEmail = async (email, type, data) => {
       <div>
         <h3>Welcome, ${data.name || data.companyName || data.partnerName}!</h3>
         <p>Thank you for registering on our platform. We are excited to have you onboard.</p>
-<p>Your registration is currently under review by our admin team. Once your profile is approved, you will receive a confirmation email and will be able to log in to your account.</p>
-<p>If you have any questions or need assistance, feel free to reach out to our support team.</p>
-
-
+        <p>Your registration is currently under review by our admin team. Once your profile is approved, you will receive a confirmation email and will be able to log in to your account.</p>
+        <p>If you have any questions or need assistance, feel free to reach out to our support team.</p>
         <p>Best regards,<br />The DKT Platform Team</p>
       </div>
     `;

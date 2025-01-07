@@ -9,8 +9,21 @@ const assetRequestSchema = new mongoose.Schema(
     address: { type: String, required: true },
     deviceType: { type: String, required: true },
     quantity: { type: Number, required: true },
-    status: { type: String, default: "pending" }, // pending, approved, rejected
+    status: { type: String, default: "Pending" }, // pending, approved, rejected
     adminComments: { type: String },
+    assignedDetails: {
+      assetIds: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+        required: true,
+      },
+      status: {
+        type: String,
+        default: "Pending",
+        enum: ["Pending", "Assigned", "In-Progress", "Delivered"],
+      },
+      date: { type: Date },
+    },
   },
   { timestamps: true }
 );

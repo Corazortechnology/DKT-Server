@@ -3,6 +3,7 @@ import { authenticateToken } from "../../donor/middelwere/authenticateToken.js";
 import { getAllReports } from "../../beneficiary/controllers/reportController.js";
 import { approveOrRejetUploads } from "../controllers/approveOrRejectUploads.js";
 import { approveUser } from "../controllers/approvedOrRejectUser.js";
+import assignedAssetsToBeneficiary from "../controllers/assigendAssetsToBeneficiary.js";
 // import {
 //   getAllAdmins,
 //   createAdmin,
@@ -32,5 +33,6 @@ router.post(
   approveOrRejetUploads
 );
 router.post("/approveOrRejectUsers", approveUser);
+router.post("/assignedAssetsToBeneficiary", assignedAssetsToBeneficiary);
 
 export default router;
