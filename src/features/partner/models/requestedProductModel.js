@@ -20,8 +20,8 @@ const requestedProductSchema = new mongoose.Schema(
     quantity: { type: Number,default:1 },
     status: {
       type: String,
-      default: "requested",
-      enum: ["requested", "assigned", "in-progress", "delivered"],
+      default: "Requested",
+      enum: ["Requested", "Assigned", "In-progress", "Delivered"],
     },
   },
   { timestamps: true }

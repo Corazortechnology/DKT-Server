@@ -5,7 +5,7 @@ import requestModel from "../../donor/models/requestModel.js";
 import productModel from "../../donor/models/productModel.js";
 import { sendEmail } from "../../../services/emailService.js";
 
-export const acceptRequest = async (req, res) => {
+export const handleDeleveryRequest = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
 
@@ -32,7 +32,7 @@ export const acceptRequest = async (req, res) => {
         .json({ success: false, message: "Partner not found" });
     }
 
-    const { requestId } = req.body;
+    const { requestId,status } = req.body;
 
     // Validate requestId
     if (!mongoose.Types.ObjectId.isValid(requestId)) {
@@ -56,14 +56,14 @@ export const acceptRequest = async (req, res) => {
     }
 
     // Update request status and assign partner
-    request.status = "Assigned";
+    request.status = status;
     request.partner = partnerId;
     await request.save();
 
     // Update product statuses to "assigned"
     await productModel.updateMany(
       { _id: { $in: request.products.map((product) => product._id) } },
-      { $set: { status: "Assigned" } }
+      { $set: { status: status } }
     );
 
     await sendEmail(request.donor.email,"acceptDelevery",{address:request.address,pickupDate:request.shippingDate,requestId:request._id})
