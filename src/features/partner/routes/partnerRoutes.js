@@ -1,6 +1,6 @@
 import express from "express";
 import { updateRequestedProductStatus } from "../controllers/updateRequestedProductStatus.js";
-import { acceptRequest } from "../controllers/acceptRequestController.js";
+import { handleDeleveryRequest } from "../controllers/acceptRequestController.js";
 import { authenticateToken } from "../../donor/middelwere/authenticateToken.js";
 import { getAllPartner, getPartnerById, getPartnerRequestsById, getPartnerRequestsBy_Id } from "../controllers/partnerController.js";
 // import {
@@ -25,8 +25,8 @@ const router = express.Router();
 // router.delete("/:id", deletePartner);
 
 router.put("/requested-products/status", updateRequestedProductStatus);
-router.post("/accept-request", acceptRequest);
-router.get("/get-acceptedrequest", acceptRequest);
+router.post("/accept-request", handleDeleveryRequest);
+router.get("/get-acceptedrequest", handleDeleveryRequest);
 
 // for admin 
 router.get("/allPartner",authenticateToken,getAllPartner)

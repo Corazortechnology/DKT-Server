@@ -20,7 +20,7 @@ const assetRequestSchema = new mongoose.Schema(
       status: {
         type: String,
         default: "Pending",
-        enum: ["Pending", "Assigned", "In-Progress", "Delivered"],
+        enum: ["Pending", "Assigned", "In-progress", "Delivered"],
       },
       date: { type: Date },
     },
