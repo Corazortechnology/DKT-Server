@@ -129,7 +129,6 @@ import { sendEmail } from "../../../services/emailService.js";
 //         products: [newProduct._id],
 //       });
 
-      
 //       await sendEmail(donor.email,"assetUploads",{assetId:newProduct._id});
 
 //       return res.status(200).json({
@@ -170,7 +169,7 @@ export const addProduct = async (req, res) => {
     // Look for the donor by userId
     const donor = await Donor.findById(userId);
     if (!donor) {
-      return res 
+      return res
         .status(404)
         .json({ success: false, message: "Donor not found" });
     }
@@ -198,11 +197,21 @@ export const addProduct = async (req, res) => {
           model,
           specification,
           ageOfProduct,
-          originalPurchaseValue
+          originalPurchaseValue,
         } = product;
 
         // Validate product fields
-        if (!name || !description || !category || !condition || !quantity || !companyDetails || !manufacturer || !model || !specification) {
+        if (
+          !name ||
+          !description ||
+          !category ||
+          !condition ||
+          !quantity ||
+          !companyDetails ||
+          !manufacturer ||
+          !model ||
+          !specification
+        ) {
           return res
             .status(400)
             .json({ success: false, message: "Missing product fields" });
@@ -239,7 +248,9 @@ export const addProduct = async (req, res) => {
         products: createdProductIds,
       });
 
-      await sendEmail(donor.email, "assetUploads", { assetId: uploadedProduct._id });
+      await sendEmail(donor.email, "assetUploads", {
+        assetId: uploadedProduct._id,
+      });
 
       return res.status(200).json({
         success: true,
@@ -259,24 +270,38 @@ export const addProduct = async (req, res) => {
         model,
         specification,
         ageOfProduct,
-        originalPurchaseValue
+        originalPurchaseValue,
       } = req.body;
-      console.log(req.body)
 
-      if (!name || !description || !category || !condition || !quantity || !companyDetails || !manufacturer || !model || !specification) {
+      if (
+        !name ||
+        !description ||
+        !category ||
+        !condition ||
+        !quantity ||
+        !companyDetails ||
+        !manufacturer ||
+        !model ||
+        !specification
+      ) {
         return res
           .status(400)
           .json({ success: false, message: "Missing product fields" });
       }
 
-      if (!req.file) {
-        return res
-          .status(400)
-          .json({ success: false, message: "No image file provided" });
-      }
-      console.log(req.file)
+      // if (!req.file) {
+      //   return res
+      //     .status(400)
+      //     .json({ success: false, message: "No image file provided" });
+      // }
+
       // Handle image upload for the single product
-      const image_url = await uploadToAzureBlob(req.file);
+      console.log();
+
+      let image_url = "";
+      if (req.file) {
+        image_url = await uploadToAzureBlob(req.file);
+      }
 
       // Create the product
       const newProduct = await productModel.create({
@@ -320,7 +345,6 @@ export const addProduct = async (req, res) => {
   }
 };
 
-
 // get all uploads
 export const getAllUploads = async (req, res) => {
   try {
@@ -329,7 +353,7 @@ export const getAllUploads = async (req, res) => {
       .find()
       .populate("donerId")
       .populate("products")
-      .sort({createdAt:-1}); // Populate the products field with product details
+      .sort({ createdAt: -1 }); // Populate the products field with product details
 
     if (!productsUploads || productsUploads.length === 0) {
       return res
@@ -398,12 +422,10 @@ export const getProductUploads = async (req, res) => {
   }
 };
 
-
-// get oroduct uploads By Id 
+// get oroduct uploads By Id
 export const getProductUploadsById = async (req, res) => {
-  
   try {
-     const {userId} = req.body
+    const { userId } = req.body;
 
     // Validate userId format
     if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -415,7 +437,9 @@ export const getProductUploadsById = async (req, res) => {
     // Find the product uploads for the donor and populate the products
     const productsUploads = await productUploadsModel
       .find({ donerId: userId })
-      .populate("products").populate("donerId").sort({createdAt:-1}); // Populate the products field with product details
+      .populate("products")
+      .populate("donerId")
+      .sort({ createdAt: -1 }); // Populate the products field with product details
 
     if (!productsUploads || productsUploads.length === 0) {
       return res
@@ -438,9 +462,8 @@ export const getProductUploadsById = async (req, res) => {
 };
 
 export const getDonorsProductUploadsById = async (req, res) => {
-  
   try {
-     const {uploadId} = req.body
+    const { uploadId } = req.body;
 
     // Validate userId format
     if (!mongoose.Types.ObjectId.isValid(uploadId)) {
@@ -452,7 +475,9 @@ export const getDonorsProductUploadsById = async (req, res) => {
     // Find the product uploads for the donor and populate the products
     const productsUploads = await productUploadsModel
       .find({ _id: uploadId })
-      .populate("products").populate("donerId").sort({createdAt:-1}); // Populate the products field with product details
+      .populate("products")
+      .populate("donerId")
+      .sort({ createdAt: -1 }); // Populate the products field with product details
 
     if (!productsUploads || productsUploads.length === 0) {
       return res
@@ -474,13 +499,10 @@ export const getDonorsProductUploadsById = async (req, res) => {
   }
 };
 
-
-export const getAllProducts= async (req, res) => {
-  
+export const getAllProducts = async (req, res) => {
   try {
     // Find the product uploads for the donor and populate the products
-    const productsUploads = await productModel
-      .find()
+    const productsUploads = await productModel.find();
 
     if (!productsUploads || productsUploads.length === 0) {
       return res

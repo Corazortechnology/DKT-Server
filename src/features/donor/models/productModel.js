@@ -47,7 +47,6 @@ const productSchema = new mongoose.Schema(
       beneficiaryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Beneficiary",
-        required: true,
       },
       status: {
         type: String,
