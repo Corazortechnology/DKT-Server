@@ -250,10 +250,10 @@ export const getAcceptedRequests = async (req, res) => {
   try {
     // Fetch all requests with the status "requested"
     const requestedProducts = await requestModel
-      .find({ status: "Assigned" })
-      .populate("donor")
-      .populate("partner")
-      .populate("products");
+    .find({ status: { $ne: "Pending" } })
+    .populate("donor")
+    .populate("partner")
+    .populate("products");
 
     res.status(200).json({
       success: true,
