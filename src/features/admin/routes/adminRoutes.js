@@ -4,6 +4,7 @@ import { getAllReports } from "../../beneficiary/controllers/reportController.js
 import { approveOrRejetUploads } from "../controllers/approveOrRejectUploads.js";
 import { approveUser } from "../controllers/approvedOrRejectUser.js";
 import assignedAssetsToBeneficiary from "../controllers/assigendAssetsToBeneficiary.js";
+import { assetAcceptOrReject } from "../controllers/assetController.js";
 // import {
 //   getAllAdmins,
 //   createAdmin,
@@ -34,5 +35,10 @@ router.post(
 );
 router.post("/approveOrRejectUsers", approveUser);
 router.post("/assignedAssetsToBeneficiary", assignedAssetsToBeneficiary);
+
+//assets request managment
+//asset accept or rejet
+router.post("/acceptOrRejectAssetRequest", authenticateToken, assetAcceptOrReject);
+
 
 export default router;
