@@ -15,7 +15,6 @@ const assetRequestSchema = new mongoose.Schema(
       assetIds: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
-        required: true,
       },
       status: {
         type: String,
