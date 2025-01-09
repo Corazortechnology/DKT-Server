@@ -18,7 +18,7 @@ const router = express.Router();
 
 // // POST: Add a new partner
 // router.post("/", createPartner);
-
+ 
 // // PUT: Update partner details
 // router.put("/:id", updatePartner);
 
@@ -28,7 +28,7 @@ const router = express.Router();
 router.put("/requested-products/status", updateRequestedProductStatus);
 router.post("/accept-request", handleDeleveryRequest);
 router.get("/get-acceptedrequest", handleDeleveryRequest);
-router.get("/assetDeleveryRequest",authenticateToken,getAssetDeleveryRequest)
+router.get("/assetDeleveryRequest",getAssetDeleveryRequest)
 
 // for admin 
 router.get("/allPartner",authenticateToken,getAllPartner)
