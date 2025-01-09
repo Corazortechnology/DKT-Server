@@ -1,9 +1,7 @@
 import assetDelevery from "../models/assetDelevery.js";
 
-
-export const getAssetDeleveryRequest = async () => {
+export const getAssetDeleveryRequest = async (req, res) => {
   try {
-
     // Find the donor and populate the `products` field
     const AssetDeleveryRequest = await assetDelevery.find().populate("beneficeryRequestId").populate("partnerId").populate("assetId");
 
