@@ -5,6 +5,7 @@ import { approveOrRejetUploads } from "../controllers/approveOrRejectUploads.js"
 import { approveUser } from "../controllers/approvedOrRejectUser.js";
 import assignedAssetsToBeneficiary from "../controllers/assigendAssetsToBeneficiary.js";
 import { assetAcceptOrReject } from "../controllers/assetController.js";
+import { creatAssetDeleveryRequest } from "../controllers/creatAssetDeleveryRequest.js";
 // import {
 //   getAllAdmins,
 //   createAdmin,
@@ -40,5 +41,7 @@ router.post("/assignedAssetsToBeneficiary", assignedAssetsToBeneficiary);
 //asset accept or rejet
 router.post("/acceptOrRejectAssetRequest", authenticateToken, assetAcceptOrReject);
 
+// create asset delevery request for partner
+router.post("/creatAccetDeleveryRequest", authenticateToken, creatAssetDeleveryRequest);
 
 export default router;
