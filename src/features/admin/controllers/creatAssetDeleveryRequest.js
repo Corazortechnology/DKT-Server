@@ -49,7 +49,7 @@ export const creatAssetDeleveryRequest = async (req, res) => {
     // Save the new delivery request
     await newRequest.save();
 
-    const updateBeneficeryRequest = await beneficiaryRequestModel.find({_id:request._id});
+    const updateBeneficeryRequest = await beneficiaryRequestModel.findOne({_id:request._id});
     updateBeneficeryRequest.assignedDetails.assetIds = assetId
     updateBeneficeryRequest.assignedDetails.status = "Assigned" 
     updateBeneficeryRequest.assignedDetails.date = new Date()
