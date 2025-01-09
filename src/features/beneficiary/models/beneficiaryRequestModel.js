@@ -9,7 +9,7 @@ const assetRequestSchema = new mongoose.Schema(
     address: { type: String, required: true },
     deviceType: { type: String, required: true },
     quantity: { type: Number, required: true },
-    status: { type: String, default: "Pending" }, // pending, approved, rejected
+    status: { type: String, default: "Pending" }, // pending, accepted, rejected
     adminComments: { type: String },
     assignedDetails: {
       assetIds: {
