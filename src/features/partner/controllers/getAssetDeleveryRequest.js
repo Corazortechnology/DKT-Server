@@ -5,7 +5,7 @@ export const getAssetDeleveryRequest = async () => {
   try {
 
     // Find the donor and populate the `products` field
-    const AssetDeleveryRequest = (await assetDelevery.find().populate("beneficeryRequestId").populate("partnerId")).populate("assetId");
+    const AssetDeleveryRequest = await assetDelevery.find().populate("beneficeryRequestId").populate("partnerId").populate("assetId");
 
     if (!AssetDeleveryRequest) {
       return res.status(404).json({ success: false, message: "AssetDeleveryRequest not found" });
