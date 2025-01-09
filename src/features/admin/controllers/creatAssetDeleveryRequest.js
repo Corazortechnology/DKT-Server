@@ -50,6 +50,7 @@ export const creatAssetDeleveryRequest = async (req, res) => {
     await newRequest.save();
 
     const updateBeneficeryRequest = await beneficiaryRequestModel.findOne({_id:request._id});
+    updateBeneficeryRequest.status = "Assigned"
     updateBeneficeryRequest.assignedDetails.assetIds = assetId
     updateBeneficeryRequest.assignedDetails.status = "Assigned" 
     updateBeneficeryRequest.assignedDetails.date = new Date()
