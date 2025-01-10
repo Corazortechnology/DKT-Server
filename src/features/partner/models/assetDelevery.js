@@ -7,7 +7,7 @@ const assetsDelevery = new mongoose.Schema(
             ref: "BeneficiaryRequest",
             required: true,
         },
-        assetId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+        assetId: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true }],
         partnerId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Partner",
