@@ -3,6 +3,8 @@ import { updateRequestedProductStatus } from "../controllers/updateRequestedProd
 import { handleDeleveryRequest } from "../controllers/acceptRequestController.js";
 import { authenticateToken } from "../../donor/middelwere/authenticateToken.js";
 import { getAllPartner, getPartnerById, getPartnerRequestsById, getPartnerRequestsBy_Id } from "../controllers/partnerController.js";
+import { getAssetDeleveryRequest } from "../controllers/getAssetDeleveryRequest.js";
+import { acceptOrRejectAssetDelevery } from "../controllers/acceptOrRejectAssetDelevery.js";
 // import {
 //   getAllPartners,
 //   createPartner,
@@ -17,7 +19,7 @@ const router = express.Router();
 
 // // POST: Add a new partner
 // router.post("/", createPartner);
-
+ 
 // // PUT: Update partner details
 // router.put("/:id", updatePartner);
 
@@ -27,7 +29,8 @@ const router = express.Router();
 router.put("/requested-products/status", updateRequestedProductStatus);
 router.post("/accept-request", handleDeleveryRequest);
 router.get("/get-acceptedrequest", handleDeleveryRequest);
-
+router.get("/assetDeleveryRequest",authenticateToken,getAssetDeleveryRequest)
+router.post("/acceptAssetDeleveryRequest",authenticateToken,acceptOrRejectAssetDelevery)
 // for admin 
 router.get("/allPartner",authenticateToken,getAllPartner)
 router.post("/getPartnerById",authenticateToken,getPartnerById)
