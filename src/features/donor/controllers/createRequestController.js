@@ -113,8 +113,9 @@ export const createRequest = async (req, res) => {
     );
     await sendEmail(donor.email, "requestDelivery", {
       address,
-      shippingDate, requestId: request._id
-    })
+      shippingDate,
+      requestId: request._id,
+    });
 
     res.status(201).json({
       message: "Change products status and Request created successfully",
@@ -128,12 +129,12 @@ export const createRequest = async (req, res) => {
 
 export const getDonerRequests = async (req, res) => {
   try {
-
     const requestedProducts = await requestModel
       .find({ donor: req.userId })
       .populate("donor")
       .populate("partner")
-      .populate("products").sort({ updatedAt: -1 });
+      .populate("products")
+      .sort({ updatedAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -150,7 +151,6 @@ export const getDonerRequests = async (req, res) => {
   }
 };
 
-
 export const getDonerRequestsById = async (req, res) => {
   try {
     const { donerId } = req.body;
@@ -158,12 +158,13 @@ export const getDonerRequestsById = async (req, res) => {
       .find({ donor: donerId })
       .populate("donor")
       .populate("partner")
-      .populate("products").sort({ updatedAt: -1 });
+      .populate("products")
+      .sort({ updatedAt: -1 });
 
     res.status(200).json({
       success: true,
       data: requestedProducts,
-      message: "requests found successfully!!"
+      message: "requests found successfully!!",
     });
   } catch (error) {
     console.error(error);
@@ -181,12 +182,13 @@ export const getDonerRequestsBy_Id = async (req, res) => {
       .find({ _id: requestId })
       .populate("donor")
       .populate("partner")
-      .populate("products").sort({ updatedAt: -1 });
+      .populate("products")
+      .sort({ updatedAt: -1 });
 
     res.status(200).json({
       success: true,
       data: requestedProducts,
-      message: "requests found successfully!!"
+      message: "requests found successfully!!",
     });
   } catch (error) {
     console.error(error);
@@ -205,7 +207,8 @@ export const getAllRequests = async (req, res) => {
       .find()
       .populate("donor")
       .populate("partner")
-      .populate("products").sort({ updatedAt: -1 });
+      .populate("products")
+      .sort({ updatedAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -229,7 +232,8 @@ export const getRequests = async (req, res) => {
       .find({ status: "Requested" })
       .populate("donor")
       .populate("partner")
-      .populate("products").sort({ updatedAt: -1 });
+      .populate("products")
+      .sort({ updatedAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -250,10 +254,10 @@ export const getAcceptedRequests = async (req, res) => {
   try {
     // Fetch all requests with the status "requested"
     const requestedProducts = await requestModel
-    .find({ status: { $ne: "Pending" } })
-    .populate("donor")
-    .populate("partner")
-    .populate("products");
+      .find({ status: { $ne: "Pending" } })
+      .populate("donor")
+      .populate("partner")
+      .populate("products");
 
     res.status(200).json({
       success: true,
