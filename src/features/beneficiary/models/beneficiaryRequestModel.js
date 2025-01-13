@@ -12,10 +12,10 @@ const assetRequestSchema = new mongoose.Schema(
     status: { type: String, default: "Pending" }, // pending, accepted, rejected
     adminComments: { type: String },
     assignedDetails: {
-      assetIds: {
+      assetIds: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
-      },
+      }],
       status: {
         type: String,
         default: "Pending",
