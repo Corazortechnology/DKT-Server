@@ -162,13 +162,13 @@ export const getAssetRequestsById = async (req, res) => {
     }
 
     // Fetch all asset requests for the given beneficiaryId
-      const request = await beneficiaryRequestModel
-  .find({ _id: id })
-  .populate("beneficiaryId") // Populate the beneficiaryId field
-  .populate({
-    path: "assignedDetails.assetIds", // Path for nested field inside assignedDetails
-    model: "Product", // Reference the Product model
-  });
+    const request = await beneficiaryRequestModel
+      .find({ _id: id })
+      .populate("beneficiaryId") // Populate the beneficiaryId field
+      .populate({
+        path: "assignedDetails.assetIds", // Path for nested field inside assignedDetails
+        model: "Product", // Reference the Product model
+      });
 
     if (!request) {
       return res.status(404).json({

@@ -1,3 +1,4 @@
+import { sendEmail } from "../../../services/emailService.js";
 import beneficiaryRequestModel from "../../beneficiary/models/beneficiaryRequestModel.js";
 import productModel from "../../donor/models/productModel.js";
 import assetDelevery from "../../partner/models/assetDelevery.js";
@@ -49,13 +50,14 @@ export const creatAssetDeleveryRequest = async (req, res) => {
     // Save the new delivery request
     await newRequest.save();
 
-    const updateBeneficeryRequest = await beneficiaryRequestModel.findOne({_id:request._id});
+    const updateBeneficeryRequest = await beneficiaryRequestModel.findOne({_id:request._id}).populate("beneficiaryId");
     updateBeneficeryRequest.status = "Assigned"
     updateBeneficeryRequest.assignedDetails.assetIds = assetId
     updateBeneficeryRequest.assignedDetails.status = "Assigned" 
     updateBeneficeryRequest.assignedDetails.date = new Date()
 
     await updateBeneficeryRequest.save();
+    await sendEmail(updateBeneficeryRequest.beneficiaryId.email,"Asset Allocation",{requestId:updateBeneficeryRequest._id})
 
     res.status(200).json({
       success: true,

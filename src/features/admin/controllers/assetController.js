@@ -1,21 +1,17 @@
+import { sendEmail } from "../../../services/emailService.js";
 import beneficiaryRequestModel from "../../beneficiary/models/beneficiaryRequestModel.js";
 
 export const assetAcceptOrReject = async (req,res)=>{
     try {
         const { id, status } = req.body
         // Find the product uploads for the donor and populate the products
-        const assetRequest = await beneficiaryRequestModel.findOne({ _id: id })
+        const assetRequest = await beneficiaryRequestModel.findOne({ _id: id }).populate("beneficiaryId")
          console.log(assetRequest)
         if(!assetRequest){
             res.status(404).json({success:false, message: "Request not found" });
         }
-
         assetRequest.status = status
-        // Update product statuses to "assigned"
-        // await productModel.updateMany(
-        //     { _id: { $in: assetsUpload.products.map((product) => product._id) } },
-        //     { $set: { adminApproval: status } }
-        // );
+        await sendEmail(assetRequest.beneficiaryId.email,"assetRequestAcceptOrReject",{requestId:assetRequest._id,status})
         await assetRequest.save();
         res.status(200).json({ success:true,message: `Asset ${status} successfully!!` });
     } catch (error) {
