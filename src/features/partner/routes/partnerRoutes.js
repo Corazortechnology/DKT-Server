@@ -5,6 +5,7 @@ import { authenticateToken } from "../../donor/middelwere/authenticateToken.js";
 import { getAllPartner, getPartnerById, getPartnerRequestsById, getPartnerRequestsBy_Id } from "../controllers/partnerController.js";
 import { getAssetDeleveryRequest } from "../controllers/getAssetDeleveryRequest.js";
 import { acceptOrRejectAssetDelevery } from "../controllers/acceptOrRejectAssetDelevery.js";
+import { getAllAssetDeliveries } from "../controllers/assetDelevery.js";
 // import {
 //   getAllPartners,
 //   createPartner,
@@ -30,6 +31,7 @@ router.put("/requested-products/status", updateRequestedProductStatus);
 router.post("/accept-request", handleDeleveryRequest);
 router.get("/get-acceptedrequest", handleDeleveryRequest);
 router.get("/assetDeleveryRequest",authenticateToken,getAssetDeleveryRequest)
+router.get("/assetDelevery",authenticateToken,getAllAssetDeliveries)
 router.post("/acceptAssetDeleveryRequest",authenticateToken,acceptOrRejectAssetDelevery)
 // for admin 
 router.get("/allPartner",authenticateToken,getAllPartner)
