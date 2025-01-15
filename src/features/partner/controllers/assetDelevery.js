@@ -6,9 +6,12 @@ export const getAllAssetDeliveries = async (req, res) => {
         // Retrieve all asset deliveries and populate referenced fields
         const deliveries = await assetDelevery
             .find()
-            .populate("beneficeryRequestId") // Populate beneficeryRequestId
+            .populate({
+                path: "beneficeryRequestId", // Populate beneficeryRequestId
+                populate: { path: "beneficiaryId" }, // Further populate beneficiaryId within beneficeryRequestId
+            })
             .populate("assetId") // Populate assetId
-            .populate("partnerId"); // Populate partnerId
+            .populate("partnerId"); // Populate partnerIdS
 
         // Check if no deliveries were found
         if (!deliveries || deliveries.length === 0) {
