@@ -127,7 +127,59 @@ export const sendEmail = async (email, type, data) => {
     </p>
   </div>
     `;
-  } else if (type === "assetRequestResponce") {
+  } else if (type === "assetRequestAcceptOrReject") {
+    subject = "Asset Request Confirmation Status";
+    html = `
+    <div>
+    
+    <p>
+      Your asset request has been ${data.status}. Below are the details for your reference:
+    </p>
+    <ul>
+      <li><strong>Request ID:</strong> ${data.requestId}</li>
+    </ul>
+    <p>
+      Please use the Request ID to track the status of your request. If you need further assistance or have any queries, feel free to reach out to our support team.
+    </p>
+    <br />
+    <p>
+      Thank you for using our service. We are committed to processing your request promptly!
+    </p>
+    <br />
+    <p>
+      Best regards,<br />
+      The DKT Platform Team
+    </p>
+  </div>
+    `;
+  } 
+  else if (type === "Asset Allocation") {
+    subject = "Asset Allotment";
+    html = `
+    <div>
+    
+    <p>
+      Assets has been successfully alloted to your request. Below are the details for your reference:
+    </p>
+    <ul>
+      <li><strong>Request ID:</strong> ${data.requestId}</li>
+    </ul>
+    <p>
+      Please use the Request ID to track the status of your request. If you need further assistance or have any queries, feel free to reach out to our support team.
+    </p>
+    <br />
+    <p>
+      Thank you for using our service. We are committed to processing your request promptly!
+    </p>
+    <br />
+    <p>
+      Best regards,<br />
+      The DKT Platform Team
+    </p>
+  </div>
+    `;
+  } 
+  else if (type === "assetRequestResponce") {
     subject = "Asset Request Update";
     html = `
     <div>
