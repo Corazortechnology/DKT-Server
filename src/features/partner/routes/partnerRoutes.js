@@ -5,7 +5,7 @@ import { authenticateToken } from "../../donor/middelwere/authenticateToken.js";
 import { getAllPartner, getPartnerById, getPartnerRequestsById, getPartnerRequestsBy_Id } from "../controllers/partnerController.js";
 import { getAssetDeleveryRequest } from "../controllers/getAssetDeleveryRequest.js";
 import { acceptOrRejectAssetDelevery } from "../controllers/acceptOrRejectAssetDelevery.js";
-import { getAllAssetDeliveries } from "../controllers/assetDelevery.js";
+import { getAllAssetDeliveries, getAssetDeleveryRequestBy_PartnerId } from "../controllers/assetDelevery.js";
 // import {
 //   getAllPartners,
 //   createPartner,
@@ -40,4 +40,6 @@ router.post("/getPartnerById",authenticateToken,getPartnerById)
 router.post("/getPartnerRequestById",authenticateToken,getPartnerRequestsById)
 //partner req by request id 
 router.post("/getPartnerRequestBy_Id",authenticateToken,getPartnerRequestsBy_Id)
+// partner asset delevery request
+router.post("/getPartnerAssetDeleveryRequestBy_Id",authenticateToken,getAssetDeleveryRequestBy_PartnerId)
 export default router;

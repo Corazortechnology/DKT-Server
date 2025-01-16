@@ -11,7 +11,7 @@ export const getAllAssetDeliveries = async (req, res) => {
                 populate: { path: "beneficiaryId" }, // Further populate beneficiaryId within beneficeryRequestId
             })
             .populate("assetId") // Populate assetId
-            .populate("partnerId"); // Populate partnerIdS
+            .populate("partnerId").sort({ updatedAt: -1 });; // Populate partnerIdS
 
         // Check if no deliveries were found
         if (!deliveries || deliveries.length === 0) {
@@ -35,3 +35,32 @@ export const getAllAssetDeliveries = async (req, res) => {
         });
     }
 };
+
+
+export const getAssetDeleveryRequestBy_PartnerId = async (req, res) => {
+    try {
+      const id = req.userId
+      const delevery = await assetDelevery
+        .find({ partnerId: id })
+        .populate({
+            path: "beneficeryRequestId", // Populate beneficeryRequestId
+            populate: { path: "beneficiaryId" }, // Further populate beneficiaryId within beneficeryRequestId
+        })
+        .populate("assetId") // Populate assetId
+        .populate("partnerId") // Populate partnerIdS
+       .sort({ updatedAt: -1 });
+  
+      res.status(200).json({
+        success: true,
+        data: delevery,
+        message: "requests found successfully!!"
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        success: false,
+        message: "Server Error",
+        error: error.message,
+      });
+    }
+  }; 
