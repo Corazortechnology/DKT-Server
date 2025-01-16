@@ -11,7 +11,7 @@ export const getAllAssetDeliveries = async (req, res) => {
                 populate: { path: "beneficiaryId" }, // Further populate beneficiaryId within beneficeryRequestId
             })
             .populate("assetId") // Populate assetId
-            .populate("partnerId").sort({ updatedAt: -1 });; // Populate partnerIdS
+            .populate("partnerId").sort({ updatedAt: -1 }); // Populate partnerIdS
 
         // Check if no deliveries were found
         if (!deliveries || deliveries.length === 0) {
@@ -39,9 +39,9 @@ export const getAllAssetDeliveries = async (req, res) => {
 
 export const getAssetDeleveryRequestBy_PartnerId = async (req, res) => {
     try {
-      const id = req.userId
+        const { requestId } = req.body;
       const delevery = await assetDelevery
-        .find({ partnerId: id })
+        .find({ _id: requestId })
         .populate({
             path: "beneficeryRequestId", // Populate beneficeryRequestId
             populate: { path: "beneficiaryId" }, // Further populate beneficiaryId within beneficeryRequestId
