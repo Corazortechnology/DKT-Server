@@ -45,6 +45,11 @@ export const getAssetDeleveryRequestBy_PartnerId = async (req, res) => {
         .populate({
             path: "beneficeryRequestId", // Populate beneficeryRequestId
             populate: { path: "beneficiaryId" }, // Further populate beneficiaryId within beneficeryRequestId
+        },{
+            path: "beneficeryRequestId", // Populate beneficeryRequestId
+            populate: { path: "assignedDetails",populate:{
+                path:"assetIds"
+            } }, // Further populate beneficiaryId within beneficeryRequestId
         })
         .populate("assetId") // Populate assetId
         .populate("partnerId") // Populate partnerIdS
