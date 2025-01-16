@@ -40,27 +40,38 @@ export const getAllAssetDeliveries = async (req, res) => {
 export const getAssetDeleveryRequestBy_PartnerId = async (req, res) => {
     try {
         const { requestId } = req.body;
-      const delevery = await assetDelevery
-        .find({ _id: requestId })
-        .populate({
-            path: "beneficeryRequestId", // Populate beneficeryRequestId
-            populate: { path: "beneficiaryId" }, // Further populate beneficiaryId within beneficeryRequestId
-        })
-        .populate("assetId") // Populate assetId
-        .populate("partnerId") // Populate partnerIdS
-       .sort({ updatedAt: -1 });
-  
-      res.status(200).json({
-        success: true,
-        data: delevery,
-        message: "requests found successfully!!"
-      });
+
+        const delevery = await assetDelevery
+            .find({ _id: requestId })
+            .populate([
+                {
+                    path: "beneficeryRequestId", // Populate beneficeryRequestId
+                    populate: [ 
+                        { path: "beneficiaryId" }, // Further populate beneficiaryId within beneficeryRequestId
+                        {
+                            path: "assignedDetails",
+                            populate: {
+                                path: "assetIds", // Populate assetIds within assignedDetails
+                            },
+                        },
+                    ],
+                },
+                { path: "assetId" }, // Populate assetId
+                { path: "partnerId" }, // Populate partnerId
+            ])
+            .sort({ updatedAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            data: delevery,
+            message: "Requests found successfully!",
+        });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({
-        success: false,
-        message: "Server Error",
-        error: error.message,
-      });
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "Server Error",
+            error: error.message,
+        });
     }
-  }; 
+};
