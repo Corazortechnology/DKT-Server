@@ -48,8 +48,8 @@ router.get("/", authenticateToken, getDonorDetails);
 router.post("/getDonorById", authenticateToken, getDonorById)
 router.get("/allDonor", authenticateToken, getAllDonor)
 router.post("/add-product", authenticateToken, upload.single("images"), addProduct);
-router.get("/products", authenticateToken, getAllProducts)
-router.get("/get-myUploads", getProductUploads);
+router.get("/products",authenticateToken,getAllProducts)
+router.get("/get-myUploads",authenticateToken,getProductUploads);
 router.get("/getallUploads",authenticateToken,getAllUploads);
 router.post("/get-myUploadsById", getProductUploadsById);
 router.post("/getDonorUploadsById", getDonorsProductUploadsById);
