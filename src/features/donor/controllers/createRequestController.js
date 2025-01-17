@@ -248,8 +248,9 @@ export const getRequests = async (req, res) => {
 
 export const getAcceptedRequests = async (req, res) => {
   try {
-    const partnerId = req.userId
+    const id = req.userId
     // Fetch all requests with the status "requested"
+    const requestedProducts = await requestModel
     .find({
       $and: [
         { status: { $ne: "Pending" } }, // Status is not "Pending"
