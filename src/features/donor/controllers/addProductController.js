@@ -400,7 +400,7 @@ export const getProductUploads = async (req, res) => {
     // Find the product uploads for the donor and populate the products
     const productsUploads = await productUploadsModel
       .find({ donerId: userId })
-      .populate("products"); // Populate the products field with product details
+      .populate("products").sort({ createdAt: -1 });; // Populate the products field with product details
 
     if (!productsUploads || productsUploads.length === 0) {
       return res
