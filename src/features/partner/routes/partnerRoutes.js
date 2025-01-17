@@ -3,7 +3,7 @@ import { updateRequestedProductStatus } from "../controllers/updateRequestedProd
 import { handleDeleveryRequest } from "../controllers/acceptRequestController.js";
 import { authenticateToken } from "../../donor/middelwere/authenticateToken.js";
 import { getAllPartner, getPartnerById, getPartnerRequestsById, getPartnerRequestsBy_Id } from "../controllers/partnerController.js";
-import { getAssetDeleveryRequest } from "../controllers/getAssetDeleveryRequest.js";
+import { getAssetDeleveryRequest, getAssetDeleveryRequestforPartner } from "../controllers/getAssetDeleveryRequest.js";
 import { acceptOrRejectAssetDelevery } from "../controllers/acceptOrRejectAssetDelevery.js";
 import { getAllAssetDeliveries, getAssetDeleveryRequestBy_PartnerId } from "../controllers/assetDelevery.js";
 // import {
@@ -31,6 +31,7 @@ router.put("/requested-products/status", updateRequestedProductStatus);
 router.post("/accept-request", handleDeleveryRequest);
 router.get("/get-acceptedrequest", handleDeleveryRequest);
 router.get("/assetDeleveryRequest",authenticateToken,getAssetDeleveryRequest)
+router.get("/assetRequest",authenticateToken,getAssetDeleveryRequestforPartner)
 router.get("/assetDelevery",authenticateToken,getAllAssetDeliveries)
 router.post("/acceptAssetDeleveryRequest",authenticateToken,acceptOrRejectAssetDelevery)
 // for admin 
