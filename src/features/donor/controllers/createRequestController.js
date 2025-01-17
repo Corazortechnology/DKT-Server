@@ -263,7 +263,7 @@ export const getAcceptedRequests = async (req, res) => {
       ],
     }).populate("donor")
       .populate("partner")
-      .populate("products");
+      .populate("products").sort({ updatedAt: -1 });
 
     res.status(200).json({
       success: true,
