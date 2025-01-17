@@ -248,7 +248,7 @@ export const getRequests = async (req, res) => {
 
 export const getAcceptedRequests = async (req, res) => {
   try {
-    const id = req.userId
+    const partnerId = req.userId
     // Fetch all requests with the status "requested"
     const requestedProducts = await requestModel
     .find({
