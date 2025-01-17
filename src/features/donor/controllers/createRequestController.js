@@ -253,9 +253,15 @@ export const getRequests = async (req, res) => {
 export const getAcceptedRequests = async (req, res) => {
   try {
     // Fetch all requests with the status "requested"
+    const partnerId = req.userId
+    // Fetch all requests with the status "requested"
     const requestedProducts = await requestModel
-      .find({ status: { $ne: "Pending" } })
-      .populate("donor")
+    .find({
+      $and: [
+        { status: { $ne: "Pending" } }, // Status is not "Pending"
+        { partner: partnerId },         // Match the specific partner ID
+      ],
+    }).populate("donor")
       .populate("partner")
       .populate("products");
 
