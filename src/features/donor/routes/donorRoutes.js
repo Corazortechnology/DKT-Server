@@ -60,7 +60,7 @@ router.get("/allRequest", authenticateToken, getAllRequests); // get requests
 
 //this both are same one is taking form token and in is body
 router.get("/requests/donor", authenticateToken, getDonerRequests); // get doner request by token 
-router.get("/acceptedRequests", getAcceptedRequests); // Create request
+router.get("/acceptedRequests",authenticateToken, getAcceptedRequests); // Create request
 router.post("/requests/donor", authenticateToken, getDonerRequestsById); // get doner request by Id
 
 //for admin basis on request id 
