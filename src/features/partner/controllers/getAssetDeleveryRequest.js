@@ -6,7 +6,7 @@ export const getAssetDeleveryRequest = async (req, res) => {
     // Find the donor and populate the `products` field
     const AssetDeleveryRequest = await assetDelevery.find({
       $and: [
-        { status: { $ne: "Assigned" } }, // Status is not "Pending"
+        { status: { $ne: "Requested" } }, // Status is not "Pending"
         { partnerId: partnerId },         // Match the specific partner ID
       ],
     }).populate("beneficeryRequestId").populate("partnerId").populate("assetId");
