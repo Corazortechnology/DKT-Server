@@ -11,9 +11,9 @@ const requestSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Partner",
     },
-    address: {type:String,required: true},
-    shippingDate: {type:String,required: true},
-    description: {type:String},
+    address: { type: String, required: true },
+    shippingDate: { type: String, required: true },
+    description: { type: String },
     products: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -21,10 +21,14 @@ const requestSchema = new mongoose.Schema(
         required: true,
       },
     ],
-    status: { 
-      type: String,
-      default: "Requested",
-      enum: ["Requested", "Assigned","Pickedup", "Delivered"],
+    // status: {
+    //   type: String,
+    //   default: "Requested",
+    //   enum: ["Requested", "Assigned","Pickedup", "Delivered"],
+    // },
+    status: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ProductTracking",
     },
   },
   { timestamps: true }
