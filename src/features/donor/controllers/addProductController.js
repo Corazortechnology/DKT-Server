@@ -5,7 +5,6 @@ import { uploadToAzureBlob } from "../../../utils/azureBlob.js";
 import productModel from "../models/productModel.js";
 import productUploadsModel from "../models/productUploadsModel.js";
 import { sendEmail } from "../../../services/emailService.js";
-import productTrackingMdel from "../../tracking/models/productTrackingMdel.js";
 
 // Add Product (Single or Bulk)
 
@@ -318,8 +317,6 @@ export const addProduct = async (req, res) => {
         ageOfProduct,
         originalPurchaseValue,
       });
-      const tracking = await productTrackingMdel.create();
-      newProduct.status = tracking._id;
       // Add the product to the donor's products array
       donor.products.push(newProduct._id);
       await donor.save();

@@ -25,7 +25,6 @@ const productTrackingSchema = new mongoose.Schema(
         remarks: { type: String }, // Optional comments or remarks
         subStatus: {
           type: String,
-          enum: ["Loading", "At Warehouse", "On the Way"],
         }, // Optional finer-grained status
       },
     ],

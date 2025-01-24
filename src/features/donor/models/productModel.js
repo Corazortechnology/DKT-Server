@@ -38,30 +38,30 @@ const productSchema = new mongoose.Schema(
       default: "Pending",
       enum: ["Pending", "Approved", "Reject"],
     },
-    // status: {
-    //   type: String,
-    //   default: "Available",
-    //   enum: ["Available", "Requested", "Assigned", "Pickedup", "Delivered"],
-    // },
     status: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "ProductTracking",
+      type: String,
+      default: "Available",
+      enum: ["Available", "Requested", "Assigned", "Pickedup", "Delivered"],
     },
+    // status: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "ProductTracking",
+    // },
 
     assignedToBeneficiary: {
       beneficiaryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Beneficiary",
       },
-      // status: {
-      //   type: String,
-      //   default: "Pending",
-      //   enum: ["Pending", "Assigned", "In-progress", "Delivered"],
-      // },
       status: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "ProductTracking",
+        type: String,
+        default: "Pending",
+        enum: ["Pending", "Assigned", "In-progress", "Delivered"],
       },
+      // status: {
+      //   type: mongoose.Schema.Types.ObjectId,
+      //   ref: "ProductTracking",
+      // },
       date: { type: Date },
     },
     createdAt: { type: Date, default: Date.now },

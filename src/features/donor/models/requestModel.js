@@ -21,15 +21,15 @@ const requestSchema = new mongoose.Schema(
         required: true,
       },
     ],
-    // status: {
-    //   type: String,
-    //   default: "Requested",
-    //   enum: ["Requested", "Assigned","Pickedup", "Delivered"],
-    // },
     status: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "ProductTracking",
+      type: String,
+      default: "Requested",
+      enum: ["Requested", "Assigned","Pickedup", "Delivered"],
     },
+    // status: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "ProductTracking",
+    // },
   },
   { timestamps: true }
 );
