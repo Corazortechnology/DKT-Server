@@ -6,6 +6,7 @@ import { getAllPartner, getPartnerById, getPartnerRequestsById, getPartnerReques
 import { getAssetDeleveryRequest, getAssetDeleveryRequestforPartner } from "../controllers/getAssetDeleveryRequest.js";
 import { acceptOrRejectAssetDelevery } from "../controllers/acceptOrRejectAssetDelevery.js";
 import { getAllAssetDeliveries, getAssetDeleveryRequestBy_PartnerId } from "../controllers/assetDelevery.js";
+import { updateAssetCondition } from "../controllers/updateAssetCondition.js";
 // import {
 //   getAllPartners,
 //   createPartner,
@@ -34,6 +35,7 @@ router.get("/assetDeleveryRequest",authenticateToken,getAssetDeleveryRequest)
 router.get("/assetRequest",authenticateToken,getAssetDeleveryRequestforPartner)
 router.get("/assetDelevery",authenticateToken,getAllAssetDeliveries)
 router.post("/acceptAssetDeleveryRequest",authenticateToken,acceptOrRejectAssetDelevery)
+router.post("/updateAssetCondition",authenticateToken,updateAssetCondition)
 // for admin 
 router.get("/allPartner",authenticateToken,getAllPartner)
 router.post("/getPartnerById",authenticateToken,getPartnerById)
