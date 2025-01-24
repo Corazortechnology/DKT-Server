@@ -13,7 +13,6 @@ const partnerSchema = new mongoose.Schema(
       enum: ["Pending", "Approved", "Reject"],
     },
   },
-
   { timestamps: true }
 );
 

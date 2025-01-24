@@ -6,6 +6,7 @@ import { approveUser } from "../controllers/approvedOrRejectUser.js";
 import assignedAssetsToBeneficiary from "../controllers/assigendAssetsToBeneficiary.js";
 import { assetAcceptOrReject } from "../controllers/assetController.js";
 import { creatAssetDeleveryRequest } from "../controllers/creatAssetDeleveryRequest.js";
+import assignedAssetsToPartner from "../controllers/assignAssetsToPartner.js";
 // import {
 //   getAllAdmins,
 //   createAdmin,
@@ -36,6 +37,9 @@ router.post(
 );
 router.post("/approveOrRejectUsers", approveUser);
 router.post("/assignedAssetsToBeneficiary", assignedAssetsToBeneficiary);
+
+//asset request assign to partner 
+router.post("/assignAssetToPartner", assignedAssetsToPartner);
 
 //assets request managment
 //asset accept or rejet
