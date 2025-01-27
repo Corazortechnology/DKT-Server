@@ -39,14 +39,14 @@ export const updateAssetCondition = async (req, res) => {
     // Respond with the updated product
     res.status(200).json({
       success: true,
-      message: "Product condition updated successfully.",
+      message: "Condition assigned successfully.",
       data: product,
     });
   } catch (error) {
-    console.error("Error updating product condition:", error);
+    console.error("Error updating asset condition:", error);
     res.status(500).json({
       success: false,
-      message: "An error occurred while updating the product condition.",
+      message: "An error occurred while updating the asset condition.",
     });
   }
 };

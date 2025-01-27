@@ -7,6 +7,9 @@ import assignedAssetsToBeneficiary from "../controllers/assigendAssetsToBenefici
 import { assetAcceptOrReject } from "../controllers/assetController.js";
 import { creatAssetDeleveryRequest } from "../controllers/creatAssetDeleveryRequest.js";
 import assignedAssetsToPartner from "../controllers/assignAssetsToPartner.js";
+import { verifyAddressToDonor } from "../../donor/controllers/addGstInfo.js";
+import { verifyAddressToBeneficiary } from "../../beneficiary/controllers/addGstInfo.js";
+import { getAllDonor } from "../controllers/userController.js";
 // import {
 //   getAllAdmins,
 //   createAdmin,
@@ -29,6 +32,7 @@ const router = express.Router();
 // router.delete("/:id", deleteAdmin);
 
 router.get("/reports", authenticateToken, getAllReports);
+router.get("/getAllDonor", authenticateToken, getAllDonor);
 
 router.post(
   "/approveOrRejectAssetUploads",
@@ -38,14 +42,30 @@ router.post(
 router.post("/approveOrRejectUsers", approveUser);
 router.post("/assignedAssetsToBeneficiary", assignedAssetsToBeneficiary);
 
-//asset request assign to partner 
+//asset request assign to partner
 router.post("/assignAssetToPartner", assignedAssetsToPartner);
 
 //assets request managment
 //asset accept or rejet
-router.post("/acceptOrRejectAssetRequest", authenticateToken, assetAcceptOrReject);
+router.post(
+  "/acceptOrRejectAssetRequest",
+  authenticateToken,
+  assetAcceptOrReject
+);
 
 // create asset delevery request for partner
-router.post("/creatAccetDeleveryRequest", authenticateToken, creatAssetDeleveryRequest);
+router.post(
+  "/creatAccetDeleveryRequest",
+  authenticateToken,
+  creatAssetDeleveryRequest
+);
+
+// Verify Address Route
+router.post(
+  "/verify-address-beneficiary",
+  authenticateToken,
+  verifyAddressToBeneficiary
+);
+router.post("/verify-address-donor", authenticateToken, verifyAddressToDonor);
 
 export default router;

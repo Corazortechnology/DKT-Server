@@ -1,5 +1,16 @@
 import mongoose from "mongoose";
 
+const addressSchema = new mongoose.Schema({
+  address: { type: String, required: true }, // Single string for the full address
+  verified: { type: Boolean, default: false }, // For admin verification
+});
+
+const gstSchema = new mongoose.Schema({
+  gst_number: { type: String, required: true },
+  company_name: { type: String, required: true },
+  company_address: { type: String, required: true }, // Single string for GST address
+});
+
 const beneficiarySchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -8,13 +19,15 @@ const beneficiarySchema = new mongoose.Schema(
     role: { type: String, default: "beneficiary" },
     schoolName: { type: String, required: true }, // Specific to beneficiaries
     otherDetails: { type: String },
-    gstIn: [
-      {
-        gst_number: { type: String, required: true },
-        company_name: { type: String, required: true },
-        company_address: { type: String, required: true },
-      },
-    ],
+    // gstIn: [
+    //   {
+    //     gst_number: { type: String, required: true },
+    //     company_name: { type: String, required: true },
+    //     company_address: { type: String, required: true },
+    //   },
+    // ],
+    gstIn: [gstSchema],
+    address: [addressSchema],
     verify: {
       type: String,
       default: "Pending",

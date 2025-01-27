@@ -4,7 +4,10 @@ import {
   updateAssetRequestStatus,
 } from "../controllers/assetRequestController.js";
 import { authenticateToken } from "../../donor/middelwere/authenticateToken.js";
-import { addBeneficaryGstDetails } from "../controllers/addGstInfo.js";
+import {
+  addAddress,
+  addBeneficaryGstDetails,
+} from "../controllers/addGstInfo.js";
 import {
   getAllAssetRequests,
   getAllBeneficiary,
@@ -56,6 +59,7 @@ router.get(
 );
 router.post("/createAssetRequest", authenticateToken, createAssetRequest);
 router.post("/gstInfo/add", authenticateToken, addBeneficaryGstDetails); // Create request
+router.post("/addAdress", authenticateToken, addAddress);
 router.post(
   "/acceptRequest/:requestId",
   authenticateToken,
