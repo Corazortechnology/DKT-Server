@@ -1,6 +1,3 @@
-// import jwt from "jsonwebtoken";
-// import Donor from "../models/donorModel.js";
-
 // export const addGstDetails = async (req, res) => {
 //   try {
 //     // Extract GST details from the request body
@@ -52,6 +49,148 @@
 
 import jwt from "jsonwebtoken";
 import Donor from "../models/donorModel.js";
+import axios from "axios";
+
+let shipRocketToken = null;
+let shipRocketTokenExpiry = null;
+
+// Fetch ShipRocket Token
+const fetchShipRocketToken = async () => {
+  try {
+    if (shipRocketToken && shipRocketTokenExpiry > Date.now()) {
+      console.log("Using existing valid ShipRocket token");
+      return shipRocketToken;
+    }
+
+    const response = await axios.post(
+      "https://apiv2.shiprocket.in/v1/external/auth/login",
+      {
+        email: process.env.SHIPROCKET_EMAIL,
+        password: process.env.SHIPROCKET_PASSWORD,
+      },
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    if (response.status === 200) {
+      const { token, expires_in } = response.data;
+
+      shipRocketToken = token;
+      shipRocketTokenExpiry = Date.now() + expires_in * 1000;
+      return shipRocketToken;
+    } else {
+      throw new Error("Failed to authenticate with ShipRocket");
+    }
+  } catch (error) {
+    console.error("Error fetching ShipRocket token:", error.message);
+    throw new Error("ShipRocket authentication failed");
+  }
+};
+
+const extractAddressComponents = (address) => {
+  try {
+    // Split the address into parts by commas
+    const parts = address.split(",").map((part) => part.trim());
+
+    if (parts.length < 3) {
+      throw new Error(
+        "Address does not contain enough components to extract city, state, and pincode."
+      );
+    }
+
+    // Extract pincode (last part)
+    const pincodeMatch = parts[parts.length - 1].match(/\b\d{6}\b/);
+    const pincode = pincodeMatch ? pincodeMatch[0] : null;
+
+    // Extract state (second-to-last part)
+    const state = parts[parts.length - 2];
+
+    // Extract city (third-to-last part)
+    const city = parts[parts.length - 3];
+
+    return { city, state, pincode };
+  } catch (error) {
+    console.error("Error extracting address components:", error.message);
+    return { city: null, state: null, pincode: null };
+  }
+};
+
+// Add Address as a Pickup Location to Shiprocket
+const addAddressToShiprocket = async (donor, address) => {
+  try {
+    const token = await fetchShipRocketToken();
+
+    const donorId = String(donor._id);
+    const addressId = String(address._id);
+
+    // Generate a shortened pickup location name
+    const pickupLocationName = `Pickup-${donorId.slice(0, 7)}-${addressId.slice(
+      0,
+      5
+    )}`;
+    const { city, state, pincode } = extractAddressComponents(address.address);
+    // Validate extracted city, state, and pincode
+    if (!city || !state || !pincode) {
+      throw new Error(
+        "Invalid address components: City, State, or Pincode is missing."
+      );
+    }
+
+    // Validate pin code with Shiprocket
+    // const pinCodeValidation = await validatePinCode(pincode);
+    // if (!pinCodeValidation || pinCodeValidation.status !== 1) {
+    //   throw new Error(`Pin code ${pincode} is not serviceable.`);
+    // }
+
+    const payload = {
+      pickup_location: pickupLocationName,
+      name: donor.companyName,
+      email: donor.email,
+      phone: "9876543210",
+      address: address.address,
+      address_2: "",
+      city: city,
+      state: state,
+      country: "India",
+      pin_code: pincode,
+    };
+    // console.log("Payload sent to Shiprocket:", payload); // Debugging
+
+    const response = await axios.post(
+      "https://apiv2.shiprocket.in/v1/external/settings/company/addpickup",
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(response.data.success, "000000");
+
+    // Check if the response indicates success
+    if (response.data.success) {
+      console.log("Successfully added address to Shiprocket:", response.data);
+      return {
+        success: true,
+        shiprocketPickupId: response.data.pickup_id,
+        message: "Address added to Shiprocket successfully",
+      };
+    } else {
+      console.error("Unexpected response from Shiprocket:", response.data);
+      throw new Error("Failed to add address to Shiprocket.");
+    }
+  } catch (error) {
+    console.error(
+      "Error adding address to Shiprocket:",
+      error.response?.data || error.message
+    );
+    return {
+      success: false,
+      message:
+        error.response?.data?.message || "Could not add address to Shiprocket.",
+    };
+  }
+};
 
 export const addGstDetails = async (req, res) => {
   try {
@@ -89,6 +228,16 @@ export const addGstDetails = async (req, res) => {
 
     // Add the GST details to the donor's gstIn array
     donor.gstIn.push({ gst_number, company_name, company_address });
+    const address = company_address;
+    // Add address to Shiprocket
+    const shiprocketResponse = await addAddressToShiprocket(donor, address);
+
+    if (!shiprocketResponse.success) {
+      return res.status(500).json({
+        success: false,
+        message: shiprocketResponse.message,
+      });
+    }
 
     // Add the GST address directly to the address field as a single string with verified: true
     donor.address.push({ address: company_address, verified: true });
@@ -181,6 +330,16 @@ export const verifyAddressToDonor = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Address not found.",
+      });
+    }
+
+    // Add address to Shiprocket
+    const shiprocketResponse = await addAddressToShiprocket(donor, address);
+
+    if (!shiprocketResponse.success) {
+      return res.status(500).json({
+        success: false,
+        message: shiprocketResponse.message,
       });
     }
 
