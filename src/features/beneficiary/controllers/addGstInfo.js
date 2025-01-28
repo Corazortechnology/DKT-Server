@@ -1,4 +1,5 @@
 import beneficiaryModel from "../models/beneficiaryModel.js";
+import jwt from "jsonwebtoken";
 
 // export const addBeneficaryGstDetails = async (req, res) => {
 //   try {
@@ -158,19 +159,20 @@ export const verifyAddressToBeneficiary = async (req, res) => {
     const { beneficiaryId, addressId } = req.body;
 
     // Validate input fields
-    if (!beneficiary || !addressId) {
+    if (!beneficiaryId || !addressId) {
       return res.status(400).json({
         success: false,
-        message: "Donor ID and Address ID are required.",
+        message: "Beneficiary ID and Address ID are required.",
       });
     }
 
-    // Find the donor by ID
+    // Find the beneficiary by ID
     const beneficiary = await beneficiaryModel.findById(beneficiaryId);
+
     if (!beneficiary) {
       return res.status(404).json({
         success: false,
-        message: "Donor not found.",
+        message: "Beneficiary not found.",
       });
     }
 
@@ -186,7 +188,7 @@ export const verifyAddressToBeneficiary = async (req, res) => {
     // Update the verified status to true
     address.verified = true;
 
-    // Save the updated donor document
+    // Save the updated beneficiary document
     await beneficiary.save();
 
     res.status(200).json({

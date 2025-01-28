@@ -1,3 +1,4 @@
+import beneficiaryModel from "../../beneficiary/models/beneficiaryModel.js";
 import donorModel from "../../donor/models/donorModel.js";
 
 export const getAllDonor = async (req, res) => {
@@ -15,7 +16,27 @@ export const getAllDonor = async (req, res) => {
       .status(200)
       .json({ success: true, message: "Donors fetched successfully", donor });
   } catch (error) {
-    console.error("Error fetching donor details:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+export const getAllBeneficiary = async (req, res) => {
+  try {
+    // Find the donor and populate the `products` field
+    const beneficiary = await beneficiaryModel.find();
+
+    if (!beneficiary) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Beneficiary not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Beneficiary fetched successfully",
+      beneficiary,
+    });
+  } catch (error) {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

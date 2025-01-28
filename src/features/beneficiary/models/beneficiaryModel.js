@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const addressSchema = new mongoose.Schema({
   address: { type: String, required: true }, // Single string for the full address
   verified: { type: Boolean, default: false }, // For admin verification
+  requestedAt: { type: Date, default: Date.now },
 });
 
 const gstSchema = new mongoose.Schema({

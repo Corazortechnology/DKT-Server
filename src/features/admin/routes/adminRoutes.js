@@ -9,7 +9,10 @@ import { creatAssetDeleveryRequest } from "../controllers/creatAssetDeleveryRequ
 import assignedAssetsToPartner from "../controllers/assignAssetsToPartner.js";
 import { verifyAddressToDonor } from "../../donor/controllers/addGstInfo.js";
 import { verifyAddressToBeneficiary } from "../../beneficiary/controllers/addGstInfo.js";
-import { getAllDonor } from "../controllers/userController.js";
+import {
+  getAllBeneficiary,
+  getAllDonor,
+} from "../controllers/userController.js";
 // import {
 //   getAllAdmins,
 //   createAdmin,
@@ -33,6 +36,7 @@ const router = express.Router();
 
 router.get("/reports", authenticateToken, getAllReports);
 router.get("/getAllDonor", authenticateToken, getAllDonor);
+router.get("/getAllBeneficiary", authenticateToken, getAllBeneficiary);
 
 router.post(
   "/approveOrRejectAssetUploads",
