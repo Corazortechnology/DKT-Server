@@ -27,8 +27,6 @@ export const getBeneficiaryDetails = async (req, res) => {
 
 export const getAllBeneficiary = async (req, res) => {
   try {
-    const Id = req.userId; // This is set by the `authenticateToken` middleware
-
     // Find the donor and populate the `products` field
     const beneficiary = await beneficiaryModel.find();
 

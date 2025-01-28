@@ -20,7 +20,7 @@ const productSchema = new mongoose.Schema(
     condition: {
       type: String,
       default: "Unclassified",
-      enum: ["Unclassified", "Recycle", "Repair", "Allocation-Ready"],
+      enum: ["Recycle", "Repair", "Unclassified", "Allocation-Ready"],
     },
     images: [{ type: String }],
     quantity: { type: Number, required: true, min: 1 },
