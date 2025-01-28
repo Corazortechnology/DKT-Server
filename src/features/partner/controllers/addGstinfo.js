@@ -9,7 +9,7 @@ let shipRocketTokenExpiry = null;
 const fetchShipRocketToken = async () => {
   try {
     if (shipRocketToken && shipRocketTokenExpiry > Date.now()) {
-      console.log("Using existing valid ShipRocket token");
+      // console.log("Using existing valid ShipRocket token");
       return shipRocketToken;
     }
 
@@ -74,10 +74,10 @@ const addAddressToShiprocket = async (partner, address) => {
     const addressId = String(address._id);
 
     // Generate a shortened pickup location name
-    const pickupLocationName = `Pickup-${partnerId.slice(0, 7)}-${addressId.slice(
-      0,
-      5
-    )}`;
+    const pickupLocationName = `Pickup-${partnerId.slice(
+      5,
+      10
+    )}-${addressId.slice(5, 10)}`;
     const { city, state, pincode } = extractAddressComponents(address.address);
     // Validate extracted city, state, and pincode
     if (!city || !state || !pincode) {
@@ -116,14 +116,14 @@ const addAddressToShiprocket = async (partner, address) => {
         },
       }
     );
-    console.log(response.data.success, "000000");
+    // console.log(response.data.success, "000000");
 
     // Check if the response indicates success
     if (response.data.success) {
       console.log("Successfully added address to Shiprocket:", response.data);
       return {
         success: true,
-        shiprocketPickupId: response.data.pickup_id,
+        shiprocketPickupId: response.data,
         message: "Address added to Shiprocket successfully",
       };
     } else {
@@ -190,8 +190,20 @@ export const addGstDetails = async (req, res) => {
       });
     }
 
+    const shiprocketPickupDetails = {
+      pickup_code: shiprocketResponse.shiprocketPickupId.address.pickup_code,
+      company_id: shiprocketResponse.shiprocketPickupId.address.company_id,
+      rto_address_id:
+        shiprocketResponse.shiprocketPickupId.address.rto_address_id,
+      pickup_id: shiprocketResponse.shiprocketPickupId.pickup_id,
+    };
+
     // Add the GST address directly to the address field as a single string with verified: true
-    partner.address.push({ address: company_address, verified: true });
+    partner.address.push({
+      address: company_address,
+      verified: true,
+      shiprocketPickupDetails,
+    });
 
     await partner.save();
 
@@ -294,15 +306,24 @@ export const verifyAddressToPartner = async (req, res) => {
       });
     }
 
+    const shiprocketPickupDetails = {
+      pickup_code: shiprocketResponse.shiprocketPickupId.address.pickup_code,
+      company_id: shiprocketResponse.shiprocketPickupId.address.company_id,
+      rto_address_id:
+        shiprocketResponse.shiprocketPickupId.address.rto_address_id,
+      pickup_id: shiprocketResponse.shiprocketPickupId.pickup_id,
+    };
+
     // Update the verified status to true
     address.verified = true;
+    address.shiprocketPickupDetails = shiprocketPickupDetails;
 
     // Save the updated partner document
     await partner.save();
 
     res.status(200).json({
       success: true,
-      message: "Address verified successfully.",
+      message: "Address verified and added to Shiprocket successfully.",
       address, // Return the updated address
     });
   } catch (error) {

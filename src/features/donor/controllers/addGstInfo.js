@@ -123,10 +123,10 @@ const addAddressToShiprocket = async (donor, address) => {
     const addressId = String(address._id);
 
     // Generate a shortened pickup location name
-    const pickupLocationName = `Pickup-${donorId.slice(0, 7)}-${addressId.slice(
-      0,
-      5
-    )}`;
+    const pickupLocationName = `Pickup-${donorId.slice(
+      5,
+      10
+    )}-${addressId.slice(5, 10)}`;
     const { city, state, pincode } = extractAddressComponents(address.address);
     // Validate extracted city, state, and pincode
     if (!city || !state || !pincode) {
