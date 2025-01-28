@@ -12,7 +12,9 @@ import { verifyAddressToBeneficiary } from "../../beneficiary/controllers/addGst
 import {
   getAllBeneficiary,
   getAllDonor,
+  getAllPartner,
 } from "../controllers/userController.js";
+import { verifyAddressToPartner } from "../../partner/controllers/addGstinfo.js";
 // import {
 //   getAllAdmins,
 //   createAdmin,
@@ -37,6 +39,7 @@ const router = express.Router();
 router.get("/reports", authenticateToken, getAllReports);
 router.get("/getAllDonor", authenticateToken, getAllDonor);
 router.get("/getAllBeneficiary", authenticateToken, getAllBeneficiary);
+router.get("/getAllPartner", authenticateToken, getAllPartner);
 
 router.post(
   "/approveOrRejectAssetUploads",
@@ -71,5 +74,6 @@ router.post(
   verifyAddressToBeneficiary
 );
 router.post("/verify-address-donor", authenticateToken, verifyAddressToDonor);
+router.post("/verify-address-partner", authenticateToken, verifyAddressToPartner);
 
 export default router;
