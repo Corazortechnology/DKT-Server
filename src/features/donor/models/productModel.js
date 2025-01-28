@@ -32,7 +32,7 @@ const productSchema = new mongoose.Schema(
       storage: { type: String, required: true },
     },
     ageOfProduct: { type: String },
-    orignalPurchaseValue: { type: String },
+    orignalPurchaseValue: { type: String }, 
     adminApproval: {
       type: String,
       default: "Pending",

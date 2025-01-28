@@ -1,6 +1,30 @@
 import requestModel from "../../donor/models/requestModel.js";
 import partnerModel from "../models/partnerModel.js";
 
+export const getPartnerDetails = async (req, res) => {
+  try {
+    const partnerId = req.userId; // This is set by the `authenticateToken` middleware
+
+    // Find the donor and populate the `products` field
+    const partner = await partnerModel.findById(partnerId)
+
+    if (!partner) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Partner not found!!" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Partner details fetched successfully",
+      partner,
+    });
+  } catch (error) {
+    console.error("Error fetching partner details:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 export const getAllPartner = async (req, res) => {
   try {
     // Find the donor and populate the `products` field
