@@ -55,7 +55,7 @@ import { sendEmail } from "../../../services/emailService.js";
 export const createRequest = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    const { requestIds, address, shippingDate, description } = req.body;
+    const { requestIds, address, shippingDate, description, city, state, pincode,phone, dimensions, alternatePhone } = req.body;
 
     if (!token) {
       return res
@@ -104,6 +104,12 @@ export const createRequest = async (req, res) => {
       address,
       shippingDate,
       description,
+      city, 
+      state,
+      pincode, 
+      alternatePhone, 
+      dimensions,
+      phone
     });
 
     // Update the status of the products to "requested"
@@ -256,12 +262,12 @@ export const getAcceptedRequests = async (req, res) => {
     const partnerId = req.userId
     // Fetch all requests with the status "requested"
     const requestedProducts = await requestModel
-    .find({
-      $and: [
-        { status: { $ne: "Pending" } }, // Status is not "Pending"
-        { partner: partnerId },         // Match the specific partner ID
-      ],
-    }).populate("donor")
+      .find({
+        $and: [
+          { status: { $ne: "Pending" } }, // Status is not "Pending"
+          { partner: partnerId },         // Match the specific partner ID
+        ],
+      }).populate("donor")
       .populate("partner")
       .populate("products").sort({ updatedAt: -1 });
 

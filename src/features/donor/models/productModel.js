@@ -19,10 +19,10 @@ const productSchema = new mongoose.Schema(
     category: { type: String, required: true },
     condition: {
       type: String,
-      required: true,
-      enum: ["Recycle", "Reuse", "Refurbished"],
+      default:'Unclassified',
+      enum: ["Recycle", "Repair", "Unclassified","Allocation-Ready"],
     },
-    images: [{ type: String }],
+    images: [{ type: String }], 
     quantity: { type: Number, required: true, min: 1 },
     manufacturer: { type: String, required: true },
     model: { type: String, required: true },
