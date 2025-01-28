@@ -165,14 +165,13 @@ const addAddressToShiprocket = async (donor, address) => {
         },
       }
     );
-    console.log(response.data.success, "000000");
 
     // Check if the response indicates success
     if (response.data.success) {
-      console.log("Successfully added address to Shiprocket:", response.data);
+      // console.log("Successfully added address to Shiprocket:", response.data);
       return {
         success: true,
-        shiprocketPickupId: response.data.pickup_id,
+        shiprocketPickupId: response.data,
         message: "Address added to Shiprocket successfully",
       };
     } else {
@@ -239,8 +238,20 @@ export const addGstDetails = async (req, res) => {
       });
     }
 
+    const shiprocketPickupDetails = {
+      pickup_code: shiprocketResponse.shiprocketPickupId.address.pickup_code,
+      company_id: shiprocketResponse.shiprocketPickupId.address.company_id,
+      rto_address_id:
+        shiprocketResponse.shiprocketPickupId.address.rto_address_id,
+      pickup_id: shiprocketResponse.shiprocketPickupId.pickup_id,
+    };
+
     // Add the GST address directly to the address field as a single string with verified: true
-    donor.address.push({ address: company_address, verified: true });
+    donor.address.push({
+      address: company_address,
+      verified: true,
+      shiprocketPickupDetails,
+    });
 
     await donor.save();
 
@@ -343,8 +354,16 @@ export const verifyAddressToDonor = async (req, res) => {
       });
     }
 
-    // Update the verified status to true
+    const shiprocketPickupDetails = {
+      pickup_code: shiprocketResponse.shiprocketPickupId.address.pickup_code,
+      company_id: shiprocketResponse.shiprocketPickupId.address.company_id,
+      rto_address_id:
+        shiprocketResponse.shiprocketPickupId.address.rto_address_id,
+      pickup_id: shiprocketResponse.shiprocketPickupId.pickup_id,
+    };
+    // Store the Shiprocket Pickup Location ID in the database
     address.verified = true;
+    address.shiprocketPickupDetails = shiprocketPickupDetails;
 
     // Save the updated donor document
     await donor.save();

@@ -76,8 +76,8 @@ const addAddressToShiprocket = async (beneficiary, address) => {
     // Generate a shortened pickup location name
     const pickupLocationName = `Pickup-${beneficiaryId.slice(
       0,
-      7
-    )}-${addressId.slice(0, 5)}`;
+      5
+    )}-${addressId.slice(5, 11)}`;
     const { city, state, pincode } = extractAddressComponents(address.address);
     // Validate extracted city, state, and pincode
     if (!city || !state || !pincode) {
@@ -116,14 +116,14 @@ const addAddressToShiprocket = async (beneficiary, address) => {
         },
       }
     );
-    console.log(response.data.success, "000000");
+    // console.log(response.data, "000000");
 
     // Check if the response indicates success
     if (response.data.success) {
-      console.log("Successfully added address to Shiprocket:", response.data);
+      // console.log("Successfully added address to Shiprocket:", response.data);
       return {
         success: true,
-        shiprocketPickupId: response.data.pickup_id,
+        shiprocketPickupId: response.data,
         message: "Address added to Shiprocket successfully",
       };
     } else {
@@ -247,7 +247,11 @@ export const addBeneficaryGstDetails = async (req, res) => {
     }
 
     // Add the GST address directly to the address field as a single string with verified: true
-    beneficiary.address.push({ address: company_address, verified: true });
+    beneficiary.address.push({
+      address: company_address,
+      verified: true,
+      pickup_code: shiprocketResponse.address.pickup_code,
+    });
 
     await beneficiary.save();
 
@@ -401,10 +405,18 @@ export const verifyAddressToBeneficiary = async (req, res) => {
         message: shiprocketResponse.message,
       });
     }
+    console.log(shiprocketResponse.shiprocketPickupId.address, "000");
 
+    const shiprocketPickupDetails = {
+      pickup_code: shiprocketResponse.shiprocketPickupId.address.pickup_code,
+      company_id: shiprocketResponse.shiprocketPickupId.address.company_id,
+      rto_address_id:
+        shiprocketResponse.shiprocketPickupId.address.rto_address_id,
+      pickup_id: shiprocketResponse.shiprocketPickupId.pickup_id,
+    };
     // Store the Shiprocket Pickup Location ID in the database
     address.verified = true;
-    // address.shiprocketPickupId = shiprocketResponse.shiprocketPickupId;
+    address.shiprocketPickupDetails = shiprocketPickupDetails;
 
     await beneficiary.save();
 

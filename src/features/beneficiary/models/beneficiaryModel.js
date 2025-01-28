@@ -3,6 +3,12 @@ import mongoose from "mongoose";
 const addressSchema = new mongoose.Schema({
   address: { type: String, required: true }, // Single string for the full address
   verified: { type: Boolean, default: false }, // For admin verification
+  shiprocketPickupDetails: {
+    pickup_code: { type: String },
+    company_id: { type: String },
+    rto_address_id: { type: String },
+    pickup_id: { type: String },
+  },
   requestedAt: { type: Date, default: Date.now },
 });
 
