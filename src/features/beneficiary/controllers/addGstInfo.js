@@ -75,9 +75,9 @@ const addAddressToShiprocket = async (beneficiary, address) => {
 
     // Generate a shortened pickup location name
     const pickupLocationName = `Pickup-${beneficiaryId.slice(
-      0,
-      5
-    )}-${addressId.slice(5, 11)}`;
+      5,
+      10
+    )}-${addressId.slice(5, 10)}`;
     const { city, state, pincode } = extractAddressComponents(address.address);
     // Validate extracted city, state, and pincode
     if (!city || !state || !pincode) {
@@ -246,11 +246,19 @@ export const addBeneficaryGstDetails = async (req, res) => {
       });
     }
 
+    const shiprocketPickupDetails = {
+      pickup_code: shiprocketResponse.shiprocketPickupId.address.pickup_code,
+      company_id: shiprocketResponse.shiprocketPickupId.address.company_id,
+      rto_address_id:
+        shiprocketResponse.shiprocketPickupId.address.rto_address_id,
+      pickup_id: shiprocketResponse.shiprocketPickupId.pickup_id,
+    };
+
     // Add the GST address directly to the address field as a single string with verified: true
     beneficiary.address.push({
       address: company_address,
       verified: true,
-      pickup_code: shiprocketResponse.address.pickup_code,
+      shiprocketPickupDetails,
     });
 
     await beneficiary.save();
@@ -405,7 +413,7 @@ export const verifyAddressToBeneficiary = async (req, res) => {
         message: shiprocketResponse.message,
       });
     }
-    console.log(shiprocketResponse.shiprocketPickupId.address, "000");
+    
 
     const shiprocketPickupDetails = {
       pickup_code: shiprocketResponse.shiprocketPickupId.address.pickup_code,

@@ -15,26 +15,17 @@ import {
   getAllPartner,
 } from "../controllers/userController.js";
 import { verifyAddressToPartner } from "../../partner/controllers/addGstinfo.js";
-// import {
-//   getAllAdmins,
-//   createAdmin,
-//   updateAdmin,
-//   deleteAdmin,
-// } from "../controllers/adminController.js";
+import {
+  addDisposalDoc,
+  addRepaireInvoice,
+  generateAllocationDoc,
+  generateInvoice,
+  getAllInvoice,
+  getInvoiceByrequestId,
+} from "../controllers/invoiceController.js";
+import { createPricingPlan, deletePricingPlan, getPricingPlanById, getPricingPlans, updatePricingPlan } from "../controllers/pricingPlanController.js";
 
 const router = express.Router();
-
-// // GET: Retrieve all admins
-// router.get("/", getAllAdmins);
-
-// // POST: Add a new admin
-// router.post("/", createAdmin);
-
-// // PUT: Update admin details
-// router.put("/:id", updateAdmin);
-
-// // DELETE: Remove an admin
-// router.delete("/:id", deleteAdmin);
 
 router.get("/reports", authenticateToken, getAllReports);
 router.get("/getAllDonor", authenticateToken, getAllDonor);
@@ -74,6 +65,25 @@ router.post(
   verifyAddressToBeneficiary
 );
 router.post("/verify-address-donor", authenticateToken, verifyAddressToDonor);
-router.post("/verify-address-partner", authenticateToken, verifyAddressToPartner);
+router.post(
+  "/verify-address-partner",
+  authenticateToken,
+  verifyAddressToPartner
+);
+
+//GST Compilance
+router.post("/generate", generateInvoice);
+router.get("/", getAllInvoice);
+router.get("/invoiceByrequestId/:requestId", getInvoiceByrequestId);
+router.post("/add-repair-invoice", addRepaireInvoice);
+router.post("/generate-allocation-doc", generateAllocationDoc);
+router.post("/add-disposal-invoice", addDisposalDoc);
+
+//subscription plan
+router.get("/pricing-plans", getPricingPlans);
+router.get("/pricing-plans/:id", getPricingPlanById);
+router.post("/pricing-plans", createPricingPlan);
+router.put("/pricing-plans/:id", updatePricingPlan);
+router.delete("/pricing-plans/:id", deletePricingPlan);
 
 export default router;

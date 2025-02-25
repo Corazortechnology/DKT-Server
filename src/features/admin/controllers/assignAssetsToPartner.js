@@ -78,6 +78,7 @@ const assignedAssetsToPartner = async (req, res) => {
         .json({ success: false, message: "Request not found" });
     }
 
+
     // Update request status and assign partner
     request.status = "Assigned";
     request.partner = partnerId;
