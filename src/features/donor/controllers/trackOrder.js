@@ -46,7 +46,7 @@ const fetchShipRocketToken = async () => {
 export const trackOrder = async (req, res) => {
     try {
         const { order_id, channel_id } = req.query;
-        console.log(order_id)
+        
         if (!order_id || !channel_id) {
           return res.status(400).json({ success: false, message: "Missing order_id or channel_id" });
         }
