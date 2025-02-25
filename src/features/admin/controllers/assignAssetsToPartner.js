@@ -4,6 +4,7 @@ import requestModel from "../../donor/models/requestModel.js";
 import productModel from "../../donor/models/productModel.js";
 import { sendEmail } from "../../../services/emailService.js";
 import axios from "axios";
+import partnerModel from "../../partner/models/partnerModel.js";
 
 let shipRocketToken = null;
 let shipRocketTokenExpiry = null;
@@ -49,8 +50,9 @@ const fetchShipRocketToken = async () => {
 const assignedAssetsToPartner = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    const { requestId, partnerId } = req.body;
-
+    const { requestId, partnerId,pickupAddress } = req.body;
+    const address = pickupAddress.address.split(",")
+    console.log(address)
     if (!token) {
       return res
         .status(401)
@@ -89,20 +91,21 @@ const assignedAssetsToPartner = async (req, res) => {
 
     // Fetch ShipRocket token if not available
     const tokenn = await fetchShipRocketToken();
-
+    const partner = await partnerModel.findById(partnerId);
+    console.log(partner)
     // Create an order in ShipRocket
     const shiprocketResponse = await axios.post(
       "https://apiv2.shiprocket.in/v1/external/orders/create/adhoc",
       {
         order_id: request._id,
         order_date: new Date().toISOString(),
-        pickup_location: "Home",
+        pickup_location: pickupAddress?.shiprocketPickupDetails?.pickup_code,
         channel_id: "",
         comment: "Handle with care",
-        reseller_name: "Reseller XYZ",
+        reseller_name: request.donor.companyName,
         company_name: request.donor.companyName || "Default Company",
-        billing_customer_name: request.donor.name || "John",
-        billing_last_name: "Doe",
+        billing_customer_name: request.donor.companyName || "John",
+        billing_last_name: "",
         billing_address: request.address || "Default Address",
         billing_address_2: "",
         billing_isd_code: "+91",
@@ -114,16 +117,16 @@ const assignedAssetsToPartner = async (req, res) => {
         billing_phone: request.phone,
         billing_alternate_phone: request.alternatePhone,
         shipping_is_billing: true,
-        shipping_customer_name: request.donor.name || "John",
-        shipping_last_name: "Doe",
-        shipping_address: request.address || "Default Address",
-        shipping_address_2: "Suite 100",
-        shipping_city: request.city || "New Delhi",
-        shipping_pincode: request.pincode || "110001",
+        shipping_customer_name: partner.partnerName || "John",
+        shipping_last_name: "",
+        shipping_address: address[0] || "Default Address",
+        shipping_address_2: "",
+        shipping_city: address[1].trim() || "New Delhi",
+        shipping_pincode: address[3].trim() || "110001",
         shipping_country: "India",
-        shipping_state: "Delhi",
-        shipping_email: request.donor.email || "example@example.com",
-        shipping_phone: request.donor.phone || "9876543210",
+        shipping_state: address[2].trim(),
+        shipping_email: partner.email || "example@example.com",
+        shipping_phone:"9876543210",
         order_items: request.products.map((product) => ({
           name: product.name,
           sku: product.model || "Default-SKU",
@@ -137,8 +140,8 @@ const assignedAssetsToPartner = async (req, res) => {
         shipping_charges: "500",
         giftwrap_charges: "50",
         transaction_charges: "100",
-        total_discount: "2100",
-        sub_total: "52200",
+        total_discount: "500",
+        sub_total: "10000",
         length: request.dimensions.length,
         breadth: request.dimensions.breadth,
         height: request.dimensions.height,
@@ -159,7 +162,7 @@ const assignedAssetsToPartner = async (req, res) => {
     if (shiprocketResponse.status !== 200) {
       throw new Error("Failed to create order in ShipRocket");
     }
-
+    console.log(shiprocketResponse)
     // Append shipping details to the request
     request.shippingDetails = shiprocketResponse.data;
     await request.save();

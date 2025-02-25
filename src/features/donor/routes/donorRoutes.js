@@ -24,6 +24,7 @@ import {
 } from "../controllers/donorController.js";
 import { authenticateToken } from "../middelwere/authenticateToken.js";
 import { addAddress, addGstDetails } from "../controllers/addGstInfo.js";
+import { trackOrder } from "../controllers/trackOrder.js";
 // import {
 //   getAllDonors,
 //   createDonor,
@@ -78,5 +79,8 @@ router.post("/requests", authenticateToken, getDonerRequestsBy_Id); // get doner
 //adding gst rout
 router.post("/gstInfo/add", authenticateToken, addGstDetails);
 router.post("/addAdress", authenticateToken, addAddress);
+
+// trackOrder
+router.get("/track-order", authenticateToken, trackOrder);
 
 export default router;
