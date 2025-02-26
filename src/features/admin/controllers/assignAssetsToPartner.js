@@ -50,9 +50,8 @@ const fetchShipRocketToken = async () => {
 const assignedAssetsToPartner = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    const { requestId, partnerId,pickupAddress } = req.body;
+    const { requestId, partnerId, pickupAddress } = req.body;
     const address = pickupAddress.address.split(",")
-    console.log(address)
     if (!token) {
       return res
         .status(401)
@@ -90,17 +89,26 @@ const assignedAssetsToPartner = async (req, res) => {
       { $set: { status: "Assigned" } }
     );
 
+    console.log(request, " req")
     // Fetch ShipRocket token if not available
     const tokenn = await fetchShipRocketToken();
     const partner = await partnerModel.findById(partnerId);
     console.log(partner)
+
+    // Extracting dynamic parts from address
+    const addressLength = address.length;
+    const shipping_pincode = addressLength >= 1 ? address[addressLength - 1].trim() : "";
+    const shipping_state = addressLength >= 2 ? address[addressLength - 2].trim() : "";
+    const shipping_city = addressLength >= 3 ? address[addressLength - 3].trim() : "";
+    const shipping_address = addressLength > 3 ? address.slice(0, addressLength - 3).join(", ").trim() : "";
+
     // Create an order in ShipRocket
     const shiprocketResponse = await axios.post(
       "https://apiv2.shiprocket.in/v1/external/orders/create/adhoc",
       {
         order_id: request._id,
         order_date: new Date().toISOString(),
-        pickup_location: pickupAddress?.shiprocketPickupDetails?.pickup_code,
+        pickup_location: request.address,
         channel_id: "",
         comment: "Handle with care",
         reseller_name: request.donor.companyName,
@@ -118,16 +126,16 @@ const assignedAssetsToPartner = async (req, res) => {
         billing_phone: request.phone,
         billing_alternate_phone: request.alternatePhone,
         shipping_is_billing: true,
-        shipping_customer_name: partner.partnerName || "John",
+        shipping_customer_name: partner.partnerName || "",
         shipping_last_name: "",
-        shipping_address: address[0] || "Default Address",
+        shipping_address: shipping_address || "",
         shipping_address_2: "",
-        shipping_city: address[1].trim() || "New Delhi",
-        shipping_pincode: address[3].trim() || "110001",
+        shipping_city: shipping_city || "",
+        shipping_pincode: shipping_pincode || "",
         shipping_country: "India",
-        shipping_state: address[2].trim(),
+        shipping_state: shipping_state,
         shipping_email: partner.email || "example@example.com",
-        shipping_phone:"9876543210",
+        shipping_phone: "9876543210",
         order_items: request.products.map((product) => ({
           name: product.name,
           sku: product.model || "Default-SKU",
