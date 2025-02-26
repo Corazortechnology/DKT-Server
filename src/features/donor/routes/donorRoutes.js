@@ -25,6 +25,7 @@ import {
 import { authenticateToken } from "../middelwere/authenticateToken.js";
 import { addAddress, addGstDetails } from "../controllers/addGstInfo.js";
 import { trackOrder } from "../controllers/trackOrder.js";
+import { checkout, paymentVarification } from "../controllers/paymentController.js";
 // import {
 //   getAllDonors,
 //   createDonor,
@@ -82,5 +83,10 @@ router.post("/addAdress", authenticateToken, addAddress);
 
 // trackOrder
 router.get("/track-order", authenticateToken, trackOrder);
+
+// payment routes
+router.post("/checkout",authenticateToken,checkout);
+router.post("/verification",authenticateToken,paymentVarification)
+
 
 export default router;

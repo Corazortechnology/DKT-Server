@@ -42,4 +42,7 @@ beneficiaryModule(app);
 // Error Handler
 app.use(errorHandler);
 
+app.get("/api/v1/getKey", (req, res) => res.status(200).json({ message: "success", data: { key: process.env.RAZORPAY_KEY_ID } }))
+
+
 export default app;

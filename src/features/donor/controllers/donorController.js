@@ -5,7 +5,7 @@ export const getDonorDetails = async (req, res) => {
     const donorId = req.userId; // This is set by the `authenticateToken` middleware
 
     // Find the donor and populate the `products` field
-    const donor = await Donor.findById(donorId).populate("products");
+    const donor = await Donor.findById(donorId).populate("products").populate("subscription");
 
     if (!donor) {
       return res
