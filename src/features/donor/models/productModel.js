@@ -19,9 +19,18 @@ const productSchema = new mongoose.Schema(
     category: { type: String, required: true },
     condition: {
       type: String,
-      required: true,
-      enum: ["Recycle", "Reuse", "Refurbished"],
+      default: "Unclassified",
+      enum: ["Recycle", "Repair", "Unclassified", "Allocation-Ready"],
     },
+    repair:{
+       isRepair:{type:Boolean,default:false},
+       service:[{
+        part:{type: String},
+        description:{type: String},
+        cost:{type:Number}
+       }]
+    },
+
     images: [{ type: String }],
     quantity: { type: Number, required: true, min: 1 },
     manufacturer: { type: String, required: true },
@@ -32,7 +41,7 @@ const productSchema = new mongoose.Schema(
       storage: { type: String, required: true },
     },
     ageOfProduct: { type: String },
-    orignalPurchaseValue: { type: String },
+    orignalPurchaseValue: { type: String }, 
     adminApproval: {
       type: String,
       default: "Pending",
@@ -43,6 +52,11 @@ const productSchema = new mongoose.Schema(
       default: "Available",
       enum: ["Available", "Requested", "Assigned", "Pickedup", "Delivered"],
     },
+    // status: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "ProductTracking",
+    // },
+
     assignedToBeneficiary: {
       beneficiaryId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -53,6 +67,10 @@ const productSchema = new mongoose.Schema(
         default: "Pending",
         enum: ["Pending", "Assigned", "In-progress", "Delivered"],
       },
+      // status: {
+      //   type: mongoose.Schema.Types.ObjectId,
+      //   ref: "ProductTracking",
+      // },
       date: { type: Date },
     },
     createdAt: { type: Date, default: Date.now },

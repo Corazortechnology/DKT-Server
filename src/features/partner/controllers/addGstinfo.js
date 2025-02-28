@@ -1,6 +1,6 @@
-import beneficiaryModel from "../models/beneficiaryModel.js";
-import axios from "axios";
 import jwt from "jsonwebtoken";
+import axios from "axios";
+import partnerModel from "../models/partnerModel.js";
 
 let shipRocketToken = null;
 let shipRocketTokenExpiry = null;
@@ -9,7 +9,7 @@ let shipRocketTokenExpiry = null;
 const fetchShipRocketToken = async () => {
   try {
     if (shipRocketToken && shipRocketTokenExpiry > Date.now()) {
-      console.log("Using existing valid ShipRocket token");
+      // console.log("Using existing valid ShipRocket token");
       return shipRocketToken;
     }
 
@@ -66,15 +66,15 @@ const extractAddressComponents = (address) => {
 };
 
 // Add Address as a Pickup Location to Shiprocket
-const addAddressToShiprocket = async (beneficiary, address) => {
+const addAddressToShiprocket = async (partner, address) => {
   try {
     const token = await fetchShipRocketToken();
 
-    const beneficiaryId = String(beneficiary._id);
+    const partnerId = String(partner._id);
     const addressId = String(address._id);
 
     // Generate a shortened pickup location name
-    const pickupLocationName = `Pickup-${beneficiaryId.slice(
+    const pickupLocationName = `Pickup-${partnerId.slice(
       5,
       10
     )}-${addressId.slice(5, 10)}`;
@@ -94,8 +94,8 @@ const addAddressToShiprocket = async (beneficiary, address) => {
 
     const payload = {
       pickup_location: pickupLocationName,
-      name: beneficiary.schoolName,
-      email: beneficiary.email,
+      name: partner.partnerName,
+      email: partner.email,
       phone: "9876543210",
       address: address.address,
       address_2: "",
@@ -116,11 +116,11 @@ const addAddressToShiprocket = async (beneficiary, address) => {
         },
       }
     );
-    // console.log(response.data, "000000");
+    // console.log(response.data.success, "000000");
 
     // Check if the response indicates success
     if (response.data.success) {
-      // console.log("Successfully added address to Shiprocket:", response.data);
+      console.log("Successfully added address to Shiprocket:", response.data);
       return {
         success: true,
         shiprocketPickupId: response.data,
@@ -143,59 +143,7 @@ const addAddressToShiprocket = async (beneficiary, address) => {
   }
 };
 
-// export const addBeneficaryGstDetails = async (req, res) => {
-//   try {
-//     // Extract GST details from the request body
-//     const { gst_number, company_name, company_address } = req.body;
-
-//     // Validate the input fields
-//     if (!gst_number || !company_name || !company_address) {
-//       return res.status(400).json({
-//         success: false,
-//         message:
-//           "All GST details (gst_number, company_name, company_address) are required",
-//       });
-//     }
-
-//     // Find the donor by ID
-//     const beneficiary = await beneficiaryModel.findById(req.userId);
-//     if (!beneficiary) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "beneficiary not found" });
-//     }
-
-//     // Check if the GST number already exists in the donor's gstIn array
-//     const isGstAlreadyPresent = beneficiary.gstIn.some(
-//       (gst) => gst.gst_number === gst_number
-//     );
-
-//     if (isGstAlreadyPresent) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "GST details already present",
-//       });
-//     }
-
-//     // Add the GST details to the donor's gstIn array
-//     beneficiary.gstIn.push({ gst_number, company_name, company_address });
-//     await beneficiary.save();
-
-//     res.status(200).json({
-//       success: true,
-//       message: "GST details added successfully",
-//       gstIn: beneficiary.gstIn, // Return updated GST details
-//     });
-//   } catch (error) {
-//     console.error("Error adding GST details:", error.message);
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while adding GST details",
-//     });
-//   }
-// };
-
-export const addBeneficaryGstDetails = async (req, res) => {
+export const addGstDetails = async (req, res) => {
   try {
     // Extract GST details from the request body
     const { gst_number, company_name, company_address } = req.body;
@@ -209,16 +157,16 @@ export const addBeneficaryGstDetails = async (req, res) => {
       });
     }
 
-    // Find the donor by ID
-    const beneficiary = await beneficiaryModel.findById(req.userId);
-    if (!beneficiary) {
+    // Find the partner by ID
+    const partner = await partnerModel.findById(req.userId);
+    if (!partner) {
       return res
         .status(404)
-        .json({ success: false, message: "Beneficiary not found" });
+        .json({ success: false, message: "Partner not found" });
     }
 
-    // Check if the GST number already exists in the donor's gstIn array
-    const isGstAlreadyPresent = beneficiary.gstIn.some(
+    // Check if the GST number already exists in the partner's gstIn array
+    const isGstAlreadyPresent = partner.gstIn.some(
       (gst) => gst.gst_number === gst_number
     );
 
@@ -229,15 +177,11 @@ export const addBeneficaryGstDetails = async (req, res) => {
       });
     }
 
-    // Add the GST details to the donor's gstIn array
-    beneficiary.gstIn.push({ gst_number, company_name, company_address });
+    // Add the GST details to the partner's gstIn array
+    partner.gstIn.push({ gst_number, company_name, company_address });
     const address = company_address;
-
     // Add address to Shiprocket
-    const shiprocketResponse = await addAddressToShiprocket(
-      beneficiary,
-      address
-    );
+    const shiprocketResponse = await addAddressToShiprocket(partner, address);
 
     if (!shiprocketResponse.success) {
       return res.status(500).json({
@@ -255,19 +199,19 @@ export const addBeneficaryGstDetails = async (req, res) => {
     };
 
     // Add the GST address directly to the address field as a single string with verified: true
-    beneficiary.address.push({
+    partner.address.push({
       address: company_address,
       verified: true,
       shiprocketPickupDetails,
     });
 
-    await beneficiary.save();
+    await partner.save();
 
     res.status(200).json({
       success: true,
       message: "GST details and address added successfully",
-      gstIn: beneficiary.gstIn, // Return updated GST details
-      address: beneficiary.address, // Return updated address list
+      gstIn: partner.gstIn, // Return updated GST details
+      address: partner.address, // Return updated address list
     });
   } catch (error) {
     console.error("Error adding GST details:", error.message);
@@ -291,27 +235,27 @@ export const addAddress = async (req, res) => {
       });
     }
 
-    // Find the beneficiary by ID
-    const beneficiary = await beneficiaryModel.findById(req.userId);
-    if (!beneficiary) {
+    // Find the partner by ID
+    const partner = await partnerModel.findById(req.userId);
+    if (!partner) {
       return res
         .status(404)
-        .json({ success: false, message: "Beneficiary not found" });
+        .json({ success: false, message: "partner not found" });
     }
 
     // Add the address to the address field (unverified by default)
-    beneficiary.address.push({
+    partner.address.push({
       address,
       verified: false, // Mark as unverified initially
     });
 
-    // Save the updated donor
-    await beneficiary.save();
+    // Save the updated partner
+    await partner.save();
 
     res.status(200).json({
       success: true,
       message: "Address added successfully, pending verification",
-      address: beneficiary.address, // Return updated addresses
+      address: partner.address, // Return updated addresses
     });
   } catch (error) {
     console.error("Error adding address:", error.message);
@@ -322,78 +266,29 @@ export const addAddress = async (req, res) => {
   }
 };
 
-// export const verifyAddressToBeneficiary = async (req, res) => {
-//   try {
-//     const { beneficiaryId, addressId } = req.body;
-
-//     // Validate input fields
-//     if (!beneficiaryId || !addressId) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Beneficiary ID and Address ID are required.",
-//       });
-//     }
-
-//     // Find the beneficiary by ID
-//     const beneficiary = await beneficiaryModel.findById(beneficiaryId);
-
-//     if (!beneficiary) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Beneficiary not found.",
-//       });
-//     }
-
-//     // Find the address by ID
-//     const address = beneficiary.address.id(addressId);
-//     if (!address) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Address not found.",
-//       });
-//     }
-
-//     // Update the verified status to true
-//     address.verified = true;
-
-//     // Save the updated beneficiary document
-//     await beneficiary.save();
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Address verified successfully.",
-//       address, // Return the updated address
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while verifying the address.",
-//     });
-//   }
-// };
-
-// Verify Address and Add Pickup Location
-
-export const verifyAddressToBeneficiary = async (req, res) => {
+export const verifyAddressToPartner = async (req, res) => {
   try {
-    const { beneficiaryId, addressId } = req.body;
+    const { partnerId, addressId } = req.body;
 
-    if (!beneficiaryId || !addressId) {
+    // Validate input fields
+    if (!partnerId || !addressId) {
       return res.status(400).json({
         success: false,
-        message: "Beneficiary ID and Address ID are required.",
+        message: "Partner ID and Address ID are required.",
       });
     }
 
-    const beneficiary = await beneficiaryModel.findById(beneficiaryId);
-    if (!beneficiary) {
+    // Find the partner by ID
+    const partner = await partnerModel.findById(partnerId);
+    if (!partner) {
       return res.status(404).json({
         success: false,
-        message: "Beneficiary not found.",
+        message: "Partner not found.",
       });
     }
 
-    const address = beneficiary.address.id(addressId);
+    // Find the address by ID
+    const address = partner.address.id(addressId);
     if (!address) {
       return res.status(404).json({
         success: false,
@@ -402,10 +297,7 @@ export const verifyAddressToBeneficiary = async (req, res) => {
     }
 
     // Add address to Shiprocket
-    const shiprocketResponse = await addAddressToShiprocket(
-      beneficiary,
-      address
-    );
+    const shiprocketResponse = await addAddressToShiprocket(partner, address);
 
     if (!shiprocketResponse.success) {
       return res.status(500).json({
@@ -413,7 +305,6 @@ export const verifyAddressToBeneficiary = async (req, res) => {
         message: shiprocketResponse.message,
       });
     }
-    
 
     const shiprocketPickupDetails = {
       pickup_code: shiprocketResponse.shiprocketPickupId.address.pickup_code,
@@ -422,11 +313,13 @@ export const verifyAddressToBeneficiary = async (req, res) => {
         shiprocketResponse.shiprocketPickupId.address.rto_address_id,
       pickup_id: shiprocketResponse.shiprocketPickupId.pickup_id,
     };
-    // Store the Shiprocket Pickup Location ID in the database
+
+    // Update the verified status to true
     address.verified = true;
     address.shiprocketPickupDetails = shiprocketPickupDetails;
 
-    await beneficiary.save();
+    // Save the updated partner document
+    await partner.save();
 
     res.status(200).json({
       success: true,
@@ -434,14 +327,9 @@ export const verifyAddressToBeneficiary = async (req, res) => {
       address, // Return the updated address
     });
   } catch (error) {
-    console.error(
-      "Error verifying address or integrating with Shiprocket:",
-      error.message
-    );
     res.status(500).json({
       success: false,
-      message:
-        "An error occurred while verifying the address or integrating with Shiprocket.",
+      message: "An error occurred while verifying the address.",
     });
   }
 };

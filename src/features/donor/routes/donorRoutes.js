@@ -17,9 +17,18 @@ import {
   getDonerRequestsBy_Id,
   getRequests,
 } from "../controllers/createRequestController.js";
-import { getAllDonor, getDonorById, getDonorDetails } from "../controllers/donorController.js";
+import {
+  getAllDonor,
+  getDonorById,
+  getDonorDetails,
+} from "../controllers/donorController.js";
 import { authenticateToken } from "../middelwere/authenticateToken.js";
-import { addGstDetails } from "../controllers/addGstInfo.js";
+import { addAddress, addGstDetails } from "../controllers/addGstInfo.js";
+import { trackOrder } from "../controllers/trackOrder.js";
+import {
+  checkout,
+  paymentVarification,
+} from "../controllers/paymentController.js";
 // import {
 //   getAllDonors,
 //   createDonor,
@@ -45,12 +54,17 @@ const router = express.Router();
 // router.post("/add-product", authenticateToken, upload.single("image"), addProduct);
 
 router.get("/", authenticateToken, getDonorDetails);
-router.post("/getDonorById", authenticateToken, getDonorById)
-router.get("/allDonor", authenticateToken, getAllDonor)
-router.post("/add-product", authenticateToken, upload.single("images"), addProduct);
-router.get("/products",authenticateToken,getAllProducts)
-router.get("/get-myUploads",authenticateToken,getProductUploads);
-router.get("/getallUploads",authenticateToken,getAllUploads);
+router.post("/getDonorById", authenticateToken, getDonorById);
+router.get("/allDonor", authenticateToken, getAllDonor);
+router.post(
+  "/add-product",
+  authenticateToken,
+  upload.single("images"),
+  addProduct
+);
+router.get("/products", authenticateToken, getAllProducts);
+router.get("/get-myUploads", authenticateToken, getProductUploads);
+router.get("/getallUploads", authenticateToken, getAllUploads);
 router.post("/get-myUploadsById", getProductUploadsById);
 router.post("/getDonorUploadsById", getDonorsProductUploadsById);
 
@@ -59,14 +73,22 @@ router.get("/requests", authenticateToken, getRequests); // get requests
 router.get("/allRequest", authenticateToken, getAllRequests); // get requests
 
 //this both are same one is taking form token and in is body
-router.get("/requests/donor", authenticateToken, getDonerRequests); // get doner request by token 
-router.get("/acceptedRequests",authenticateToken, getAcceptedRequests); // Create request
+router.get("/requests/donor", authenticateToken, getDonerRequests); // get doner request by token
+router.get("/acceptedRequests", authenticateToken, getAcceptedRequests); // Create request
 router.post("/requests/donor", authenticateToken, getDonerRequestsById); // get doner request by Id
 
-//for admin basis on request id 
+//for admin basis on request id
 router.post("/requests", authenticateToken, getDonerRequestsBy_Id); // get doner request by Id
 
 //adding gst rout
-router.post("/gstInfo/add", authenticateToken, addGstDetails); // Create request
+router.post("/gstInfo/add", authenticateToken, addGstDetails);
+router.post("/addAdress", authenticateToken, addAddress);
+
+// trackOrder
+router.get("/track-order", authenticateToken, trackOrder);
+
+// payment routes
+router.post("/checkout", authenticateToken, checkout);
+router.post("/verification", authenticateToken, paymentVarification);
 
 export default router;
