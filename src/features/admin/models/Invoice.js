@@ -2,15 +2,19 @@ import mongoose from "mongoose";
 
 const invoiceSchema = mongoose.Schema(
   {
-    donorName: String,
-    donorEmail: String,
-    laptopDetails: String,
-    requestId: String,
+    requestId: { type: mongoose.Schema.Types.ObjectId, // ✅ Reference PricingPlan
+    ref: "Request"},
+    subscription:{type: mongoose.Schema.Types.ObjectId, // ✅ Reference PricingPlan
+    ref: "PricingPlan"},
     invoiceType: {
       type: String,
       enum: ["zero-value", "repair", "disposal"],
       required: true,
     },
+    platformFee:{type:Number},
+    logisticsFee:{type:Number},
+    transactionFee:{type:Number},
+    serviceFee:{type:Number},
     gstNumber: String,
     invoiceAmount: { type: Number, default: 0 },
     gstApplicable: { type: Boolean, default: false },
