@@ -122,6 +122,12 @@ export const addRepaireInvoice = async (req, res) => {
     await donor.save();
   }
 
+  const request = await requestModel.findById(requestId);
+   if(request){
+     request.invoiceGenerated =true;
+   }
+   await request.save();
+
     res.status(201).json({
       success: true,
       message: "Repair Invoice Created & Donor Subscription Updated!",
