@@ -100,7 +100,6 @@ export const sendEmail = async (email, type, data) => {
       The DKT Platform Team
     </p>
   </div>
-  
     `;
   } else if (type === "assetRequest") {
     subject = "Asset Request Confirmation";
