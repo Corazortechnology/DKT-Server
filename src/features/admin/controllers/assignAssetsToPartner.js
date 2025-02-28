@@ -52,7 +52,7 @@ const assignedAssetsToPartner = async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];
     const { requestId, partnerId,pickupAddress } = req.body;
     const address = pickupAddress.address.split(",")
-    console.log(address)
+  
     if (!token) {
       return res
         .status(401)

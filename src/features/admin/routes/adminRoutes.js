@@ -24,7 +24,7 @@ import {
   getInvoiceByrequestId,
 } from "../controllers/invoiceController.js";
 import { createPricingPlan, deletePricingPlan, getPricingPlanById, getPricingPlans, updatePricingPlan } from "../controllers/pricingPlanController.js";
-import { deleteSubscription, getAllSubscriptions, getSubscriptionById, updateSubscription } from "../controllers/subscriptionController.js";
+
 
 const router = express.Router();
 
@@ -87,13 +87,6 @@ router.post("/pricing-plans", createPricingPlan);
 router.put("/pricing-plans/:id", updatePricingPlan);
 router.delete("/pricing-plans/:id", deletePricingPlan);
 
-// Admin: Get a subscription by its ID
-router.get("/subscriptions/:id", getSubscriptionById);
-// Admin: Get all subscriptions
-router.get("/subscriptions", getAllSubscriptions);
-// Admin: Update a subscription (e.g. update status)
-router.put("/subscriptions/:id", updateSubscription);
-// Admin: Delete a subscription
-router.delete("/subscriptions/:id", deleteSubscription);
+
 
 export default router;

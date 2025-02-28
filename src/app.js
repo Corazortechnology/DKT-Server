@@ -33,7 +33,7 @@ authModule(app); // Routes for login and authentication (e.g., /api/auth)
 // app.use("/api/v1/beneficiary", protect, beneficiaryModule);
 // app.use("/api/v1/donor", protect, donorModule);
 // app.use("/api/v1/admin", protect, isAdmin, adminModule);
-adminModule(app)
+adminModule(app);
 // app.use("/api/v1/partner", protect, partnerModule);
 partnerModule(app);
 donorModule(app);
@@ -41,5 +41,11 @@ beneficiaryModule(app);
 
 // Error Handler
 app.use(errorHandler);
+
+app.get("/api/v1/getKey", (req, res) =>
+  res
+    .status(200)
+    .json({ message: "success", data: { key: process.env.RAZORPAY_KEY_ID } })
+);
 
 export default app;

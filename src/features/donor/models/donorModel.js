@@ -45,6 +45,11 @@ const donorSchema = new mongoose.Schema(
       default: "Pending",
       enum: ["Pending", "Approved", "Reject"],
     },
+    subscription: {
+      type: mongoose.Schema.Types.ObjectId, // Reference type
+      ref: 'Subscription', 
+      required: false, 
+    },
   },
   { timestamps: true }
 );
