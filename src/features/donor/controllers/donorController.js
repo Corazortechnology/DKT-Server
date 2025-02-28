@@ -29,13 +29,17 @@ export const getDonorById = async (req, res) => {
     const { id } = req.body; // This is set by the `authenticateToken` middleware
 
     // Find the donor and populate the `products` field
-
+     console.log(id)
     const donor = await Donor.findById(id).populate({
       path: "products",
       populate: {
         path: "assignedToBeneficiary.beneficiaryId",
         model: "Beneficiary", // Replace with the actual Beneficiary model name if different
       },
+    }).populate({
+      path:"subscription",
+      populate:"plan"
+      
     });
 
     if (!donor) {

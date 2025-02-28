@@ -208,7 +208,6 @@ export const getDonerRequestsBy_Id = async (req, res) => {
 
 export const getAllRequests = async (req, res) => {
   try {
-    // Fetch all requests with the status "requested"
     const requestedProducts = await requestModel
       .find()
       .populate("donor")

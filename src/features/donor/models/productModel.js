@@ -22,6 +22,15 @@ const productSchema = new mongoose.Schema(
       default: "Unclassified",
       enum: ["Recycle", "Repair", "Unclassified", "Allocation-Ready"],
     },
+    repair:{
+       isRepair:{type:Boolean,default:false},
+       service:[{
+        part:{type: String},
+        description:{type: String},
+        cost:{type:Number}
+       }]
+    },
+
     images: [{ type: String }],
     quantity: { type: Number, required: true, min: 1 },
     manufacturer: { type: String, required: true },

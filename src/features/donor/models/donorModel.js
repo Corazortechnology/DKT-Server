@@ -46,10 +46,42 @@ const donorSchema = new mongoose.Schema(
       enum: ["Pending", "Approved", "Reject"],
     },
     subscription: {
-      type: mongoose.Schema.Types.ObjectId, // Reference type
-      ref: 'Subscription', 
-      required: false, 
+      plan: {
+        type: mongoose.Schema.Types.ObjectId, // ✅ Reference PricingPlan
+        ref: "PricingPlan",
+        required: false, // ✅ Keep it false if a free tier exists
+      },
+      status: {
+        type: String,
+        enum: ["Active", "Expired", "Canceled", "Pending"],
+        default: "Pending", // ✅ Industry standard to track subscription lifecycle
+      },
+      paid: {
+        type: Boolean,
+        default: false,
+      },
+      expiresAt: {
+        type: Date, // ✅ Using Date for proper time calculations
+        default: () => new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // ✅ Default: Current Date + 10 days
+        required: false,
+      },
+      
+      startedAt: {
+        type: Date, // ✅ Useful for tracking when the subscription began
+        default: Date.now,
+      },
+      transactionId: {
+        type: String, // ✅ Store payment transaction ID if needed for audit
+        required: false,
+      },
+      paymentMethod: {
+        type: String,
+        enum: ["Credit Card", "PayPal", "Bank Transfer", "UPI", "Other"], // ✅ Industry standard to track payment method
+        required: false,
+      },
     },
+    
+   
   },
   { timestamps: true }
 );
