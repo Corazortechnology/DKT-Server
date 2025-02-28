@@ -12,7 +12,10 @@ const requestSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Partner",
     },
-    address: { type: String, required: true }, // Shipping Address
+    address: {
+      pickupCode:{type: String, required: true},
+      fullAddress:{type: String, required: true},
+    }, // Shipping Address
     city: { type: String, required: true }, // Shipping City
     state: { type: String, required: true }, // Shipping State
     country: { type: String, default: "India" }, // Shipping Country
