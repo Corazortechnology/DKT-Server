@@ -65,7 +65,7 @@ const donorSchema = new mongoose.Schema(
         default: () => new Date(Date.now() + 10 * 24 * 60 * 60 * 1000), // ✅ Default: Current Date + 10 days
         required: false,
       },
-      
+
       startedAt: {
         type: Date, // ✅ Useful for tracking when the subscription began
         default: Date.now,
@@ -76,12 +76,17 @@ const donorSchema = new mongoose.Schema(
       },
       paymentMethod: {
         type: String,
-        enum: ["Credit Card", "PayPal", "Bank Transfer", "UPI", "Other"], // ✅ Industry standard to track payment method
-        required: false,
+        enum: [
+          "Credit Card",
+          "PayPal",
+          "Bank Transfer",
+          "UPI",
+          "RazorPay",
+          "Other",
+        ], // ✅ Industry standard to track payment method
+        default: "RazorPay",
       },
     },
-    
-   
   },
   { timestamps: true }
 );

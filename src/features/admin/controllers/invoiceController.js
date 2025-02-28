@@ -44,7 +44,20 @@ export const getInvoiceByrequestId = async (req, res) => {
   try {
     const { requestId } = req.params;
 
-    const invoices = await Invoice.find({ requestId });
+    // Fetch invoices and populate request, subscription, and product details
+    const invoices = await Invoice.find({ requestId })
+      .populate({
+        path: "requestId", // Populate Request details
+        populate: {
+          path: "products",
+          select: "name condition manufacturer model repair",
+        },
+        select: "products status donor",
+      })
+      .populate({
+        path: "subscription", // Populate PricingPlan details
+        select: "planName price duration",
+      });
 
     if (!invoices.length) {
       return res
@@ -71,25 +84,30 @@ export const addRepaireInvoice = async (req, res) => {
       platformFee,
       logisticsFee,
       transactionFee,
-      serviceFee
+      serviceFee,
     } = req.body;
-    console.log(requestId, 
-    subscription, 
-    invoiceAmount,
-    gstNumber,
-    donorId,platformFee,
-    logisticsFee,
-    transactionFee,
-    serviceFee)
-   
+    // console.log(requestId,
+    // subscription,
+    // invoiceAmount,
+    // gstNumber,
+    // donorId,platformFee,
+    // logisticsFee,
+    // transactionFee,
+    // serviceFee)
+
     // ✅ Validate Required Fields
     if (!requestId || !invoiceAmount || !donorId) {
-      return res.status(400).json({ success: false, message: "Request ID, Invoice Amount, and Donor ID are required." });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Request ID, Invoice Amount, and Donor ID are required.",
+        });
     }
 
     // ✅ Create New Invoice
     const newInvoice = new Invoice({
-      requestId, 
+      requestId,
       subscription: subscription || null, // Attach subscription if provided
       invoiceType: "repair",
       platformFee,
@@ -106,41 +124,41 @@ export const addRepaireInvoice = async (req, res) => {
     // ✅ Save Invoice to Database
     await newInvoice.save();
 
+    if (subscription) {
+      // ✅ Update Donor's Subscription & Payment Status
+      const donor = await donorModel.findById(donorId);
+      if (!donor) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Donor not found." });
+      }
 
-    if(subscription){
-    // ✅ Update Donor's Subscription & Payment Status
-    const donor = await donorModel.findById(donorId);
-    if (!donor) {
-      return res.status(404).json({ success: false, message: "Donor not found." });
+      donor.subscription = {
+        plan: subscription || donor.subscription?.plan, // Keep existing plan if not provided
+        paid: false, // ✅ Payment pending
+        expiresAt:
+          new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) ||
+          donor.subscription?.expiresAt, // Keep existing expiry date
+      };
+      await donor.save();
     }
 
-    donor.subscription = {
-      plan: subscription || donor.subscription?.plan, // Keep existing plan if not provided
-      paid: false, // ✅ Payment pending
-      expiresAt: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000) || donor.subscription?.expiresAt, // Keep existing expiry date
-    };
-    await donor.save();
-  }
-
-  const request = await requestModel.findById(requestId);
-   if(request){
-     request.invoiceGenerated =true;
-   }
-   await request.save();
+    const request = await requestModel.findById(requestId);
+    if (request) {
+      request.invoiceGenerated = true;
+    }
+    await request.save();
 
     res.status(201).json({
       success: true,
       message: "Repair Invoice Created & Donor Subscription Updated!",
       data: newInvoice,
     });
-
   } catch (error) {
     console.error("Error creating repair invoice:", error);
     res.status(500).json({ success: false, message: "Internal Server Error!" });
   }
 };
-
-
 
 //Generate Allocation doc
 export const generateAllocationDoc = async (req, res) => {

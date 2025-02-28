@@ -3,6 +3,8 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 import { Subscription } from "../models/subscriptionModel.js";
 import donorModel from "../models/donorModel.js";
+import Invoice from "../../admin/models/Invoice.js";
+import requestModel from "../models/requestModel.js";
 
 // Load environment variables
 dotenv.config();
@@ -13,12 +15,11 @@ const instance = new Razorpay({
 });
 
 export const checkout = async (req, res) => {
-  const { amount, period, plan } = req.body;
+  const { invoice } = req.body;
   const userId = req.userId;
-  const isUser = await donorModel.findById(userId);
 
   const options = {
-    amount: Number(amount * 100), // amount in the smallest currency unit
+    amount: Number(invoice.invoiceAmount * 100), // amount in the smallest currency unit
     currency: "INR",
   };
 
@@ -29,11 +30,7 @@ export const checkout = async (req, res) => {
       success: true,
       message: "Order created successfully",
       data: order,
-      userId,
-      period,
-      plan,
-      userName: isUser.userName,
-      userEmail: isUser.email,
+      requestId: invoice.requestId._id,
     });
   } catch (error) {
     res.status(500).json({ message: "Failed to create order", error });
@@ -59,18 +56,17 @@ const calculateEndDate = (startDate, type) => {
   return null;
 };
 
+
 export const paymentVarification = async (req, res) => {
   const {
     razorpay_order_id,
     razorpay_payment_id,
     razorpay_signature,
-    amount,
-    userId,
-    period,
-    plan,
+    invoiceId,
   } = req.body;
 
   try {
+    // ✅ Check if the Razorpay security key is set
     if (!process.env.RAZORPAY_SECURITY_KEY) {
       return res
         .status(500)
@@ -83,59 +79,72 @@ export const paymentVarification = async (req, res) => {
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
-    console.log(
-      "Expected Sign:",
-      expectedSign,
-      "Received:",
-      razorpay_signature
-    );
-
     if (expectedSign !== razorpay_signature) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid Payment Verification!" });
     }
 
-    // ✅ Create Subscription if signature matches
-    const subscriptionStartDate = new Date();
-    const subscriptionEndDate = calculateEndDate(subscriptionStartDate, period);
-
-    const newSubscription = new Subscription({
-      user: userId,
-      plan,
-      amount,
-      period,
-      startDate: subscriptionStartDate,
-      endDate: subscriptionEndDate,
-      status: "Active",
-      paymentDetails: {
-        method: "Credit Card",
-        transactionId: razorpay_payment_id,
-      },
-    });
-
-    await newSubscription.save();
-
-    // ✅ Update user subscription
-    const isUser = await donorModel.findById(userId);
-    if (!isUser) {
+    // ✅ Fetch the invoice
+    const invoice = await Invoice.findById(invoiceId);
+    if (!invoice) {
       return res
         .status(404)
-        .json({ success: false, message: "No user found!" });
+        .json({ success: false, message: "Invoice not found!" });
     }
 
-    isUser.subscription = newSubscription._id;
-    await isUser.save();
+    // ✅ Update Invoice Payment Details
+    invoice.paymentDetail.status = "Success";
+    invoice.paymentDetail.paid = true;
+    invoice.paymentDetail.transactionId = razorpay_payment_id;
+
+    // ✅ Fetch the related request
+    const request = await requestModel.findById(invoice.requestId);
+    if (!request) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Request not found!" });
+    }
+
+    // ✅ Update Request Payment Details
+    request.paymentDetail.status = "Active";
+    request.paymentDetail.paid = true;
+    request.paymentDetail.transactionId = razorpay_payment_id;
+
+    // ✅ Fetch the donor
+    const donor = await donorModel.findById(request.donor);
+    if (!donor) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Donor not found!" });
+    }
+
+    // ✅ If Invoice is for Subscription, Update Donor Subscription
+    if (invoice.subscription) {
+      donor.subscription.status = "Active";
+      donor.subscription.paid = true;
+      donor.subscription.transactionId = razorpay_payment_id;
+
+      // ✅ Correctly Set Subscription Expiry Date (12 Months from Now)
+      donor.subscription.expiresAt = new Date();
+      donor.subscription.expiresAt.setFullYear(
+        donor.subscription.expiresAt.getFullYear() + 1
+      );
+
+      // ✅ Update Subscription Start Date
+      donor.subscription.startedAt = new Date();
+    }
+
+    // ✅ Save Updated Data
+    await invoice.save();
+    await request.save();
+    await donor.save();
 
     return res.status(201).json({
       success: true,
-      message: "Subscription created successfully!",
+      message: "Payment Verified & Subscription Updated!",
       data: {
         paymentId: razorpay_payment_id,
-        amount,
-        plan,
-        duration: period,
-        expireOn: subscriptionEndDate.toISOString(),
       },
     });
   } catch (error) {

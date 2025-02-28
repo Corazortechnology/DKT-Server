@@ -51,7 +51,7 @@ const assignedAssetsToPartner = async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
     const { requestId, partnerId, pickupAddress } = req.body;
-    const address = pickupAddress.address.split(",")
+    const address = pickupAddress.address.split(",");
     if (!token) {
       return res
         .status(401)
@@ -77,7 +77,6 @@ const assignedAssetsToPartner = async (req, res) => {
         .json({ success: false, message: "Request not found" });
     }
 
-
     // Update request status and assign partner
     request.status = "Assigned";
     request.partner = partnerId;
@@ -89,18 +88,27 @@ const assignedAssetsToPartner = async (req, res) => {
       { $set: { status: "Assigned" } }
     );
 
-    console.log(request, " req")
+    // console.log(request, " req")
     // Fetch ShipRocket token if not available
     const tokenn = await fetchShipRocketToken();
     const partner = await partnerModel.findById(partnerId);
-    console.log(partner)
+    console.log(partner);
 
     // Extracting dynamic parts from address
     const addressLength = address.length;
-    const shipping_pincode = addressLength >= 1 ? address[addressLength - 1].trim() : "";
-    const shipping_state = addressLength >= 2 ? address[addressLength - 2].trim() : "";
-    const shipping_city = addressLength >= 3 ? address[addressLength - 3].trim() : "";
-    const shipping_address = addressLength > 3 ? address.slice(0, addressLength - 3).join(", ").trim() : "";
+    const shipping_pincode =
+      addressLength >= 1 ? address[addressLength - 1].trim() : "";
+    const shipping_state =
+      addressLength >= 2 ? address[addressLength - 2].trim() : "";
+    const shipping_city =
+      addressLength >= 3 ? address[addressLength - 3].trim() : "";
+    const shipping_address =
+      addressLength > 3
+        ? address
+            .slice(0, addressLength - 3)
+            .join(", ")
+            .trim()
+        : "";
 
     // Create an order in ShipRocket
     const shiprocketResponse = await axios.post(
@@ -171,7 +179,7 @@ const assignedAssetsToPartner = async (req, res) => {
     if (shiprocketResponse.status !== 200) {
       throw new Error("Failed to create order in ShipRocket");
     }
-    console.log(shiprocketResponse)
+    console.log(shiprocketResponse);
     // Append shipping details to the request
     request.shippingDetails = shiprocketResponse.data;
     await request.save();
