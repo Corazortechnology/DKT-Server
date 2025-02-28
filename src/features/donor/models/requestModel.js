@@ -86,6 +86,7 @@ const requestSchema = new mongoose.Schema(
       height: { type: Number, required: true }, // Package Height
       weight: { type: Number, required: true }, // Package Weight
     },
+    invoiceGenerated:{type:Boolean,default:false},
     shippingDetails: {
       order_id: { type: Number }, // ShipRocket order ID
       channel_order_id: { type: String }, // Channel order ID
