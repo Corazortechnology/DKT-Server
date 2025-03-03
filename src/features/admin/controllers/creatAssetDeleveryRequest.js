@@ -1,14 +1,56 @@
+import axios from "axios";
 import { sendEmail } from "../../../services/emailService.js";
 import beneficiaryRequestModel from "../../beneficiary/models/beneficiaryRequestModel.js";
 import productModel from "../../donor/models/productModel.js";
 import assetDelevery from "../../partner/models/assetDelevery.js";
+import partnerModel from "../../partner/models/partnerModel.js";
+let shipRocketToken = null;
+let shipRocketTokenExpiry = null;
+
+// Fetch ShipRocket Token
+const fetchShipRocketToken = async () => {
+  try {
+    // Check if the token exists and is not expired
+    if (shipRocketToken && shipRocketTokenExpiry > Date.now()) {
+      console.log("Using existing valid ShipRocket token");
+      return shipRocketToken;
+    }
+
+    console.log("Fetching a new ShipRocket token");
+    const response = await axios.post(
+      "https://apiv2.shiprocket.in/v1/external/auth/login",
+      {
+        email: process.env.SHIPROCKET_EMAIL,
+        password: process.env.SHIPROCKET_PASSWORD,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    if (response.status === 200) {
+      const { token, expires_in } = response.data;
+
+      shipRocketToken = token;
+      shipRocketTokenExpiry = Date.now() + expires_in * 1000; // Convert expires_in seconds to milliseconds
+
+      return shipRocketToken;
+    } else {
+      throw new Error("Failed to authenticate with ShipRocket");
+    }
+  } catch (error) {
+    console.error("Error fetching ShipRocket token:", error.message);
+    throw new Error("ShipRocket authentication failed");
+  }
+};
 
 export const creatAssetDeleveryRequest = async (req, res) => {
   try {
-    const { request, assetId } = req.body;
+    const { request, assetId,partnerId,partnerAddress } = req.body;
+    console.log(request, assetId,partnerId,partnerAddress)
 
     // Validate input
-    if (!request || !assetId || !Array.isArray(assetId) || assetId.length === 0) {
+    if (!request || !assetId || !partnerId || !partnerAddress || !Array.isArray(assetId) || assetId.length === 0) {
       return res.status(400).json({ success: false, message: "Invalid input" });
     }
 
@@ -29,13 +71,129 @@ export const creatAssetDeleveryRequest = async (req, res) => {
     const newRequest = new assetDelevery({
       beneficeryRequestId: request._id,
       assetId,
+      partnerId,
+      partnerAddress:partnerAddress.address
     });
 
     if (!newRequest) {
       return res.status(404).json({ success: false, message: "Request not created" });
     }
 
-    // Update product statuses to "assigned"
+
+   
+    const updateBeneficeryRequest = await beneficiaryRequestModel.findOne({_id:request._id}).populate("beneficiaryId");
+    updateBeneficeryRequest.status = "Approved"
+    updateBeneficeryRequest.assignedDetails.assetIds = assetId
+    updateBeneficeryRequest.assignedDetails.status = "Assigned" 
+    updateBeneficeryRequest.assignedDetails.date = new Date()
+
+    const partner = await partnerModel.findById(partnerId)
+
+    const addressParts = partnerAddress.address.split(",");
+
+    // Extracting dynamic parts from address
+    const addressLength = addressParts.length;
+    const billing_pincode = addressLength >= 1 ? addressParts[addressLength - 1].trim() : "";
+    const billing_state = addressLength >= 2 ? addressParts[addressLength - 2].trim() : "";
+    const billing_city = addressLength >= 3 ? addressParts[addressLength - 3].trim() : "";
+    const billing_address = addressLength > 3 ? addressParts.slice(0, addressLength - 3).join(", ").trim() : "";
+
+    const shippingaddressParts = updateBeneficeryRequest.address.fullAddress.split(",");
+
+    // Extracting dynamic parts from address
+    const shippingaddressLength = shippingaddressParts.length;
+    const shipping_pincode = addressLength >= 1 ? addressParts[shippingaddressLength - 1].trim() : "";
+    const shipping_state = addressLength >= 2 ? addressParts[shippingaddressLength - 2].trim() : "";
+    const shipping_city = addressLength >= 3 ? addressParts[shippingaddressLength - 3].trim() : "";
+    const shipping_address = addressLength > 3 ? addressParts.slice(0, shippingaddressLength - 3).join(", ").trim() : "";
+
+    // all asign products 
+    const Products = await productModel.find({
+      _id: { $in: assetId }
+    }).lean(); // ✅ This retrieves all matching products
+    
+
+    const payload = {
+      order_id: updateBeneficeryRequest._id,
+      order_date: new Date().toISOString(),
+      pickup_location: partnerAddress.shiprocketPickupDetails.pickup_code,
+      channel_id: "",
+      comment: "Handle with care",
+      reseller_name: partner.partnerName,
+      company_name: "Digital-K-Tech",
+      billing_customer_name: partner.partnerName || "John",
+      billing_last_name: "",
+      billing_address: billing_address || "Default Address",
+      billing_address_2: "",
+      billing_isd_code: "+91",
+      billing_city: billing_city,
+      billing_pincode: billing_pincode,
+      billing_state: billing_state,
+      billing_country: "India",
+      billing_email: partner.email,
+      billing_phone: updateBeneficeryRequest.contactNumber,
+      billing_alternate_phone: updateBeneficeryRequest.contactNumber,
+      shipping_is_billing: false,
+      shipping_customer_name: updateBeneficeryRequest.fullName || "",
+      shipping_last_name: "",
+      shipping_address: shipping_address || "",
+      shipping_address_2: "",
+      shipping_city: shipping_city || "",
+      shipping_pincode: shipping_pincode || "",
+      shipping_country: "India",
+      shipping_state: shipping_state || "",
+      shipping_email: updateBeneficeryRequest.email || "example@example.com",
+      shipping_phone:  updateBeneficeryRequest.contactNumber,
+      order_items: Products.map((product) => ({
+        name: product.name,
+        sku: product.model || "Default-SKU",
+        units: product.quantity || 1,
+        selling_price: 0,
+        discount: "0",
+        tax: "0",
+        hsn: "84713010",
+      })),
+      payment_method: "Prepaid",
+      shipping_charges: "0",
+      giftwrap_charges: "0",
+      transaction_charges: "0",
+      total_discount: "0",
+      sub_total: 0,
+      length:  30,
+      breadth:  30,
+      height: 30,
+      weight:5,
+      ewaybill_no: "EWB123456789",
+      customer_gstin: "29ABCDE1234F2Z5",
+      invoice_number: "INV987654321",
+      order_type: "ESSENTIALS",
+    };
+
+    console.log(payload)
+     // Fetch ShipRocket token if not available
+     const shipRocketToken = await fetchShipRocketToken();
+     if (!shipRocketToken) {
+       return res.status(401).json({ success: false, message: "Failed to authenticate with ShipRocket" });
+     }
+    // ✅ Send Request to ShipRocket
+    // try {
+      const shiprocketResponse = await axios.post(
+        "https://apiv2.shiprocket.in/v1/external/orders/create/adhoc",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${shipRocketToken}`,
+          },
+        }
+      );
+      console.log(shiprocketResponse.status)
+       // ✅ Handle Successful Response
+       if (shiprocketResponse.status === 200) {
+        updateBeneficeryRequest.shippingDetails = shiprocketResponse.data;
+        newRequest.shippingDetails = shiprocketResponse.data;
+
+          // Update product statuses to "assigned"
     await productModel.updateMany(
       { _id: { $in: assetId } },
       {
@@ -46,23 +204,26 @@ export const creatAssetDeleveryRequest = async (req, res) => {
         },
       }
     );
+    
+     // Save the new delivery request and update beneficery request
+     await newRequest.save();
+     await updateBeneficeryRequest.save();
+     await sendEmail(updateBeneficeryRequest.beneficiaryId.email,"Asset Allocation",{requestId:updateBeneficeryRequest._id})
+     
+     res.status(200).json({
+       success: true,
+       message: `Request created successfully! All assets have been assigned.`,
+     });
+      } else {
+        // ❌ Handle Unexpected Success Response with Wrong Status Code
+        console.error("Unexpected Response:", shiprocketResponse.status, shiprocketResponse.data);
+        return res.status(shiprocketResponse.status).json({
+          success: false,
+          message: "Unexpected ShipRocket response",
+          error: shiprocketResponse.data,
+        });
+      }
 
-    // Save the new delivery request
-    await newRequest.save();
-
-    const updateBeneficeryRequest = await beneficiaryRequestModel.findOne({_id:request._id}).populate("beneficiaryId");
-    updateBeneficeryRequest.status = "Assigned"
-    updateBeneficeryRequest.assignedDetails.assetIds = assetId
-    updateBeneficeryRequest.assignedDetails.status = "Assigned" 
-    updateBeneficeryRequest.assignedDetails.date = new Date()
-
-    await updateBeneficeryRequest.save();
-    await sendEmail(updateBeneficeryRequest.beneficiaryId.email,"Asset Allocation",{requestId:updateBeneficeryRequest._id})
-
-    res.status(200).json({
-      success: true,
-      message: `Request created successfully! All assets have been assigned.`,
-    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });

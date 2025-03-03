@@ -193,9 +193,10 @@ export const getAllAssetRequests = async (req, res) => {
   try {
     // Fetch all asset requests
     const requests = await beneficiaryRequestModel
-      .find()
-      .populate("beneficiaryId");
-
+    .find()
+    .populate("beneficiaryId") // Populates beneficiary details
+    .populate("assignedDetails.assetIds"); // Populates asset details from Product model
+    
     if (!requests) {
       return res.status(404).json({
         success: false,
