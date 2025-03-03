@@ -65,6 +65,7 @@ export const registerUser = async (req, res, next) => {
     // Validate input
     const { error } = validateRegistration(section, data);
     if (error) {
+      await verifyOTP(data.email, otp);
       return res
         .status(400)
         .json({ success: false, message: error.details[0].message });
