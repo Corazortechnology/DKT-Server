@@ -327,7 +327,7 @@ const assignedAssetsToPartner = async (req, res) => {
       billing_email: request.donor.email,
       billing_phone: request.phone,
       billing_alternate_phone: request.alternatePhone,
-      shipping_is_billing: true,
+      shipping_is_billing: false,
       shipping_customer_name: partner.partnerName || "",
       shipping_last_name: "",
       shipping_address: shipping_address || "",
