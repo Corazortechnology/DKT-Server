@@ -23,7 +23,7 @@ const partnerSchema = new mongoose.Schema(
     partnerName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    phone: { type: String, required: true },
+    phone: { type: String, required: false },
     alternatePhone: { type: String },
     role: { type: String, default: "partner" },
     servicesProvided: { type: String },
