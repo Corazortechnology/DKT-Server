@@ -218,7 +218,7 @@ export const sendEmail = async (email, type, data) => {
       <li><strong>Status:</strong> ${data.status}</li>
     </ul>
     <p>
-      ${data.status === "approved"
+      ${data.status === "Approved"
         ? "Congratulations! Your request has been approved. We will process it shortly and notify you of the next steps."
         : "Unfortunately, your request has been rejected. If you have any questions or would like to discuss further, please contact our support team."
       }

@@ -11,7 +11,7 @@ export const assetAcceptOrReject = async (req,res)=>{
             res.status(404).json({success:false, message: "Request not found" });
         }
         assetRequest.status = status
-        await sendEmail(assetRequest.beneficiaryId.email,"assetRequestAcceptOrReject",{requestId:assetRequest._id,status})
+        await sendEmail(assetRequest.beneficiaryId.email,"assetRequestResponce",{requestId:assetRequest._id,status})
         await assetRequest.save();
         res.status(200).json({ success:true,message: `Asset ${status} successfully!!` });
     } catch (error) {
