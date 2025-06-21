@@ -38,6 +38,7 @@ import {
   getSpecialRequestsByDonor,
   rejectSpecialRequest,
   UpdateAgreement,
+  updatePaymentStatus,
 } from "../controllers/specialRequestController.js";
 // import {
 //   getAllDonors,
@@ -118,5 +119,6 @@ router.post(
   UpdateAgreement
 );
 router.get("/get-special-request/:id", authenticateToken, getSpecialRequestById);
+router.post("/special-request/payment", authenticateToken, updatePaymentStatus);
 
 export default router;

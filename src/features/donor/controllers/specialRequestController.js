@@ -71,7 +71,7 @@ export const getMySpecialRequests = async (req, res) => {
     const donorId = req.userId;
 
     const requests = await specialRequestModel.find({ donor: donorId })
-      .populate("decisionBy", "name email").sort({ createdAt: -1 });
+      .populate("donor", "companyName email").sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -192,5 +192,38 @@ export const UpdateAgreement = async (req, res) => {
   } catch (error) {
     console.error("Agreement creation error:", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updatePaymentStatus = async (req, res) => {
+  try {
+    const { specialRequestId, transactionId, fundTransferDate, paymentMethod } = req.body;
+
+    if (!specialRequestId || !transactionId) {
+      return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    const updatedRequest = await specialRequestModel.findByIdAndUpdate(
+      specialRequestId,
+      {
+        $set: {
+          "paymentDetail.status": "Active",
+          "paymentDetail.paid": true,
+          "paymentDetail.transactionId": transactionId,
+          "paymentDetail.paymentMethod": paymentMethod || "RazorPay",
+          "paymentDetail.fundTransferDate": fundTransferDate || new Date(),
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedRequest) {
+      return res.status(404).json({ success: false, message: "Special Request not found" });
+    }
+
+    return res.status(200).json({ success: true, message: "Payment status updated", data: updatedRequest });
+  } catch (error) {
+    console.error("Error updating payment status:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
