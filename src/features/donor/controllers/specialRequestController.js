@@ -1,5 +1,14 @@
 import specialRequestModel from "../models/specialRequestModel.js";
 import puppeteer from "puppeteer";
+import dotenv from "dotenv";
+import Razorpay from "razorpay";
+
+dotenv.config();
+
+const instance = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_SECURITY_KEY,
+});
 
 // POST /api/special-requests
 export const createSpecialRequest = async (req, res) => {
@@ -77,10 +86,8 @@ export const getMySpecialRequests = async (req, res) => {
   try {
     const donorId = req.userId;
 
-    const requests = await specialRequestModel
-      .find({ donor: donorId })
-      .populate("donor", "companyName email")
-      .sort({ createdAt: -1 });
+    const requests = await specialRequestModel.find({ donor: donorId })
+      .populate("donor", "companyName email").sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -209,5 +216,73 @@ export const UpdateAgreement = async (req, res) => {
   } catch (error) {
     console.error("Agreement creation error:", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updatePaymentStatus = async (req, res) => {
+  try {
+    const { specialRequestId, transactionId, fundTransferDate, paymentMethod } = req.body;
+
+    if (!specialRequestId || !transactionId) {
+      return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    const updatedRequest = await specialRequestModel.findByIdAndUpdate(
+      specialRequestId,
+      {
+        $set: {
+          "paymentDetail.status": "Active",
+          "paymentDetail.paid": true,
+          "paymentDetail.transactionId": transactionId,
+          "paymentDetail.paymentMethod": paymentMethod || "RazorPay",
+          "paymentDetail.fundTransferDate": fundTransferDate || new Date(),
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedRequest) {
+      return res.status(404).json({ success: false, message: "Special Request not found" });
+    }
+
+    return res.status(200).json({ success: true, message: "Payment status updated", data: updatedRequest });
+  } catch (error) {
+    console.error("Error updating payment status:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+export const specialRequestCheckout = async (req, res) => {
+  try {
+    const { specialRequestId } = req.body;
+
+    const request = await specialRequestModel.findById(specialRequestId);
+    if (!request || !request.requestedAmount) {
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "Special request not found or no requested amount",
+        });
+    }
+
+    const options = {
+      amount: Number(request.requestedAmount * 100), // Convert to paise
+      currency: "INR",
+    };
+
+    const order = await instance.orders.create(options);
+
+    res.status(200).json({
+      success: true,
+      message: "Razorpay order created",
+      data: order,
+      specialRequestId: request._id,
+    });
+  } catch (err) {
+    console.error("Checkout error:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error during checkout" });
   }
 };

@@ -37,7 +37,9 @@ import {
   getMySpecialRequests,
   getSpecialRequestsByDonor,
   rejectSpecialRequest,
+  specialRequestCheckout,
   UpdateAgreement,
+  updatePaymentStatus,
 } from "../controllers/specialRequestController.js";
 // import {
 //   getAllDonors,
@@ -117,6 +119,16 @@ router.post(
   authenticateToken, // middleware to verify token
   UpdateAgreement
 );
-router.get("/get-special-request/:id", authenticateToken, getSpecialRequestById);
+router.get(
+  "/get-special-request/:id",
+  authenticateToken,
+  getSpecialRequestById
+);
+router.post("/special-request/payment", authenticateToken, updatePaymentStatus);
+router.post(
+  "/special-request/checkout",
+  authenticateToken,
+  specialRequestCheckout
+);
 
 export default router;
