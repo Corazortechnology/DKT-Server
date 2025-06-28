@@ -23,6 +23,7 @@ import {
   beneficiaryDashboard,
   donorDashboard,
   partnerDashboard,
+  vendorDashboard,
 } from "../controllers/dashboardController.js";
 import { authorizeRoles } from "../../../middlewares/authMiddleware.js";
 
@@ -45,6 +46,7 @@ router.post("/reset-password", resetPassword);
 // Protected Routes
 router.get("/donor-dashboard", authorizeRoles(["donor"]), donorDashboard);
 router.get("/partner-dashboard", authorizeRoles(["partner"]), partnerDashboard);
+router.get("/vendor-dashboard", authorizeRoles(["vendor"]), vendorDashboard);
 router.get(
   "/beneficiary-dashboard",
   authorizeRoles(["beneficiary"]),

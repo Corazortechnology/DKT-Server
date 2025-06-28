@@ -6,6 +6,7 @@ import Beneficiary from "../../beneficiary/models/beneficiaryModel.js";
 import Donor from "../../donor/models/donorModel.js";
 import Admin from "../../admin/models/adminModel.js";
 import Partner from "../../partner/models/partnerModel.js";
+import Vendor from "../../vendor/models/vendorModel.js";
 import { sendEmail } from "../../../services/emailService.js";
 
 const sections = {
@@ -13,6 +14,7 @@ const sections = {
   donor: Donor,
   admin: Admin,
   partner: Partner,
+  vendor: Vendor,
 };
 
 // Request OTP after password verification
@@ -193,6 +195,8 @@ export const getUserName = async (req, res) => {
       name = user.username;
     } else if (section === "partner") {
       name = user.partnerName;
+    } else if (section === "vendor") {
+      name = user.vendorName;
     }
 
     // Return the name

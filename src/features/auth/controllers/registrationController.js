@@ -3,6 +3,7 @@ import Beneficiary from "../../beneficiary/models/beneficiaryModel.js";
 import Donor from "../../donor/models/donorModel.js";
 import Admin from "../../admin/models/adminModel.js";
 import Partner from "../../partner/models/partnerModel.js";
+import Vendor from "../../vendor/models/vendorModel.js"
 import { validateRegistration } from "../validations/authValidation.js";
 import { sendEmail } from "../../../services/emailService.js";
 import { generateOTP, verifyOTP } from "../services/otpService.js";
@@ -12,6 +13,7 @@ const sections = {
   donor: Donor,
   admin: Admin,
   partner: Partner,
+  vendor:Vendor,
 };
 
 // Request OTP before registration

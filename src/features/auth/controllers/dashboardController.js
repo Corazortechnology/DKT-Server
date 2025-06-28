@@ -10,6 +10,12 @@ export const partnerDashboard = (req, res) => {
     .json({ success: true, message: "Welcome to the Partner Dashboard" });
 };
 
+export const vendorDashboard = (req, res) => {
+  return res
+    .status(200)
+    .json({ success: true, message: "Welcome to the Vendor Dashboard" });
+};
+
 export const beneficiaryDashboard = (req, res) => {
   return res
     .status(200)

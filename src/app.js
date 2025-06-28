@@ -9,6 +9,7 @@ import beneficiaryModule from "./features/beneficiary/index.js";
 import donorModule from "./features/donor/index.js";
 import adminModule from "./features/admin/index.js";
 import partnerModule from "./features/partner/index.js";
+import vendorModule from "./features/vendor/index.js";
 import { isAdmin } from "./middlewares/roleMiddleware.js";
 
 const app = express();
@@ -38,6 +39,7 @@ adminModule(app);
 partnerModule(app);
 donorModule(app);
 beneficiaryModule(app);
+vendorModule(app);
 
 // Error Handler
 app.use(errorHandler);
