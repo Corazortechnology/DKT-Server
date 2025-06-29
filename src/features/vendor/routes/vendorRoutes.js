@@ -18,8 +18,8 @@ router.get("/", authenticateToken, getVendorDetails);
 // router.post("/acceptAssetDeleveryRequest",authenticateToken,acceptOrRejectAssetDelevery)
 // router.post("/updateAssetCondition",authenticateToken,updateAssetCondition)
 // for admin
-router.get("/allPartner", authenticateToken, getAllVendor);
-router.post("/getPartnerById", authenticateToken, getVendorById);
+router.get("/allVendor", authenticateToken, getAllVendor);
+router.post("/getVendorById", authenticateToken, getVendorById);
 //partner req by partner id
 // router.post("/getPartnerRequestById",authenticateToken,getPartnerRequestsById)
 //partner req by request id
