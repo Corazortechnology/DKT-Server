@@ -1,19 +1,30 @@
 import specialRequestModel from "../models/specialRequestModel.js";
-import puppeteer from "puppeteer"
+import puppeteer from "puppeteer";
+import dotenv from "dotenv";
+import Razorpay from "razorpay";
+
+dotenv.config();
+
+const instance = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_SECURITY_KEY,
+});
 
 // POST /api/special-requests
 export const createSpecialRequest = async (req, res) => {
   try {
-    const {
-      donationFields,
-      donationRange,
-      donorNote,
-    } = req.body;
+    const { donationFields, donationRange, donorNote } = req.body;
     const donorId = req.userId;
 
     // Validate required fields
-    if (!donationFields || !Array.isArray(donationFields) || donationFields.length === 0) {
-      return res.status(400).json({ success: false, message: "Donation fields are required" });
+    if (
+      !donationFields ||
+      !Array.isArray(donationFields) ||
+      donationFields.length === 0
+    ) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Donation fields are required" });
     }
 
     if (
@@ -21,7 +32,10 @@ export const createSpecialRequest = async (req, res) => {
       typeof donationRange.min !== "number" ||
       typeof donationRange.max !== "number"
     ) {
-      return res.status(400).json({ success: false, message: "Donation range is required and must include min and max" });
+      return res.status(400).json({
+        success: false,
+        message: "Donation range is required and must include min and max",
+      });
     }
 
     // Create special request
@@ -50,13 +64,15 @@ export const getSpecialRequestsByDonor = async (req, res) => {
   try {
     const { donorId } = req.params;
 
-    const requests = await specialRequestModel.find({ donor: donorId })
+    const requests = await specialRequestModel
+      .find({ donor: donorId })
       .populate("donor", "name email")
-      .populate("decisionBy", "name email").sort({ createdAt: -1 });
+      .populate("decisionBy", "name email")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
-      message:"request found successFull!!",
+      message: "request found successFull!!",
       data: requests,
     });
   } catch (err) {
@@ -70,12 +86,14 @@ export const getMySpecialRequests = async (req, res) => {
   try {
     const donorId = req.userId;
 
-    const requests = await specialRequestModel.find({ donor: donorId })
-      .populate("donor", "companyName email").sort({ createdAt: -1 });
+    const requests = await specialRequestModel
+      .find({ donor: donorId })
+      .populate("donor", "companyName email")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
-      message:"request found successFull!!",
+      message: "request found successFull!!",
       data: requests,
     });
   } catch (error) {
@@ -87,9 +105,11 @@ export const getMySpecialRequests = async (req, res) => {
 export const getAllSpecialRequests = async (req, res) => {
   try {
     console.log("here");
-    const requests = await specialRequestModel.find({})
-      .populate("donor", "companyName email _id")       // <-- populate donor details
-      .populate("decisionBy", "name email").sort({ createdAt: -1 }); // <-- already present
+    const requests = await specialRequestModel
+      .find({})
+      .populate("donor", "companyName email _id") // <-- populate donor details
+      .populate("decisionBy", "name email")
+      .sort({ createdAt: -1 }); // <-- already present
 
     console.log(requests);
     res.status(200).json({
@@ -122,7 +142,9 @@ export const acceptSpecialRequest = async (req, res) => {
     );
 
     if (!updatedRequest) {
-      return res.status(404).json({ success: false, message: "Request not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Request not found" });
     }
 
     res.status(200).json({
@@ -154,7 +176,9 @@ export const rejectSpecialRequest = async (req, res) => {
     );
 
     if (!updatedRequest) {
-      return res.status(404).json({ success: false, message: "Request not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Request not found" });
     }
 
     res.status(200).json({
@@ -183,12 +207,14 @@ export const UpdateAgreement = async (req, res) => {
       return res.status(404).json({ message: "Special request not found" });
     }
 
-    request.requestedAmount = amount
-    request.adminNote = adminNote
-    request.agreementCreated = true
+    request.requestedAmount = amount;
+    request.adminNote = adminNote;
+    request.agreementCreated = true;
     await request.save();
 
-    return res.status(200).json({ message: "Agreement created successfully", data: request });
+    return res
+      .status(200)
+      .json({ message: "Agreement created successfully", data: request });
   } catch (error) {
     console.error("Agreement creation error:", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -197,10 +223,13 @@ export const UpdateAgreement = async (req, res) => {
 
 export const updatePaymentStatus = async (req, res) => {
   try {
-    const { specialRequestId, transactionId, fundTransferDate, paymentMethod } = req.body;
+    const { specialRequestId, transactionId, fundTransferDate, paymentMethod } =
+      req.body;
 
     if (!specialRequestId || !transactionId) {
-      return res.status(400).json({ success: false, message: "Missing required fields" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing required fields" });
     }
 
     const updatedRequest = await specialRequestModel.findByIdAndUpdate(
@@ -218,12 +247,53 @@ export const updatePaymentStatus = async (req, res) => {
     );
 
     if (!updatedRequest) {
-      return res.status(404).json({ success: false, message: "Special Request not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Special Request not found" });
     }
 
-    return res.status(200).json({ success: true, message: "Payment status updated", data: updatedRequest });
+    return res
+      .status(200)
+      .json({
+        success: true,
+        message: "Payment status updated",
+        data: updatedRequest,
+      });
   } catch (error) {
     console.error("Error updating payment status:", error);
     res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+export const specialRequestCheckout = async (req, res) => {
+  try {
+    const { specialRequestId } = req.body;
+
+    const request = await specialRequestModel.findById(specialRequestId);
+    if (!request || !request.requestedAmount) {
+      return res.status(404).json({
+        success: false,
+        message: "Special request not found or no requested amount",
+      });
+    }
+
+    const options = {
+      amount: Number(request.requestedAmount * 100), // Convert to paise
+      currency: "INR",
+    };
+
+    const order = await instance.orders.create(options);
+
+    res.status(200).json({
+      success: true,
+      message: "Razorpay order created",
+      data: order,
+      specialRequestId: request._id,
+    });
+  } catch (err) {
+    console.error("Checkout error:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Server error during checkout" });
   }
 };

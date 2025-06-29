@@ -18,6 +18,7 @@ import {
   getBeneficiaryDetails,
 } from "../controllers/beneficiaryController.js";
 import { reportToAdmin } from "../controllers/reportController.js";
+import { acceptSpecialRequest, createSpecialRequest, getAllSpecialRequests, getRequestsByBeneficiary, rejectSpecialRequest } from "../controllers/beneficirySpecialRequestController.js";
 
 // import {
 //   getBeneficiaries,
@@ -67,5 +68,12 @@ router.post(
 );
 
 router.post("/reportToAdmin", authenticateToken, reportToAdmin);
+
+//special request
+router.post("/creatSpecialRequest", authenticateToken, createSpecialRequest);
+router.get("/getBeneficirySpecialrequest", authenticateToken, getRequestsByBeneficiary);
+router.get("/getAllBeneficirySpecialrequest", authenticateToken, getAllSpecialRequests);
+router.patch("/acceptSpecialRequest/:id", authenticateToken, acceptSpecialRequest);
+router.patch("/rejectSpecialRequest/:id", authenticateToken, rejectSpecialRequest);
 
 export default router;
